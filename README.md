@@ -1,2 +1,2 @@
-# De-Verse-22
+# DeVerse-22
 OSS Club Hackathon
