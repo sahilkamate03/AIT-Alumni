@@ -1,6 +1,10 @@
-from flask import  render_template, url_for, redirect
-from ait.models import User, Post
+from flask import  render_template, url_for, redirect, jsonify
+
+import json
+
 from ait import app
+from ait.models import User, Post
+
 
 @app.route('/')
 def home():
@@ -13,3 +17,11 @@ def login():
 @app.route('/register')
 def register():
     return render_template('./auth_page/pages-register.html', title = 'Register')
+
+@app.route('/get_post')
+def get_post():
+    view_post = render_template(
+        './post/view_post.html')
+
+    data = {'remain': view_post}
+    return jsonify(data)
