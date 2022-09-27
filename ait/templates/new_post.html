@@ -66,11 +66,20 @@
                                                     {{ create_post.content(class="form-control form-control-lg") }}
                                                     {% endif %}
                                                 </div>
+
+                                                <!-- file input starts -->
+                                                <div class="mb-3 mt-3">
+
+                                                    <input class="form-control" type="file" id="formFile">
+                                                </div>
+                                                <!-- file input ends -->
+
                                             </fieldset>
 
                                             <div class="form-group">
                                                 {{ create_post.submit(class="btn btn-outline-info") }}
                                             </div>
+
                                         </form>
                                     </div>
                                 </div>
