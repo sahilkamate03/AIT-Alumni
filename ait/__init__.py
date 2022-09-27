@@ -4,8 +4,10 @@ from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 import firebase_admin
 from firebase_admin import credentials
+from firebase_admin import firestore
 import pyrebase
 
+import json
 from datetime import datetime
 
 
@@ -17,13 +19,14 @@ cred = credentials.Certificate(r'D:\code\hackathon\De`Verse-22\test\config\admin
 firebase_admin.initialize_app(cred)
 
 db = SQLAlchemy(app)
+db_fire = firestore.client()
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 login_manager.login_message_category = 'info'
 
-# with open('D:/code/hackathon/De`Verse-22/test/config/firebase_config.json', 'r') as f:
-#     firebaseConfig = json.load(f)
-# firebase = pyrebase.initialize_app(firebaseConfig)
+with open(r'D:\code\hackathon\De`Verse-22\test\config\firebase_config.json', 'r') as f:
+    firebaseConfig = json.load(f)
+firebase = pyrebase.initialize_app(firebaseConfig)
 
 from ait import routes

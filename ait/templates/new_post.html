@@ -31,31 +31,31 @@
                                         <div class="d-flex flex-row align-items-start"><img
                                                 class="rounded-circle me-2 mt-2" src="https://i.imgur.com/RpzrMR2.jpg"
                                                 width="40">
-                                            <h5 class="card-title">Username <span>/Today</span></h5>
+                                            <h5 class="card-title">{{user_data['name']}} <span>/{{user_data['role']}}</span></h5>
 
                                         </div>
                                         <form method="POST" action="">
-                                            {{ create_post.hidden_tag() }}
+                                            {{ form.hidden_tag() }}
                                             <fieldset class="form-group">
                                                 <legend class="border-bottom mb-4">{{ legend }}</legend>
                                                 <div class="form-group">
-                                                    {{ create_post.title.label(class="form-control-label") }}
-                                                    {% if create_post.title.errors %}
-                                                    {{ create_post.title(class="form-control form-control-lg
+                                                    {{ form.title.label(class="form-control-label") }}
+                                                    {% if form.title.errors %}
+                                                    {{ form.title(class="form-control form-control-lg
                                                     is-invalid") }}
                                                     <div class="invalid-feedback">
-                                                        {% for error in create_post.title.errors %}
+                                                        {% for error in form.title.errors %}
                                                         <span>{{ error }}</span>
                                                         {% endfor %}
                                                     </div>
                                                     {% else %}
-                                                    {{ create_post.title(class="form-control form-control-lg") }}
+                                                    {{ form.title(class="form-control form-control-lg") }}
                                                     {% endif %}
                                                 </div>
                                                 <div class="form-group">
-                                                    {{ create_post.content.label(class="form-control-label") }}
-                                                    {% if create_post.content.errors %}
-                                                    {{ create_post.content(class="form-control form-control-lg
+                                                    {{ form.content.label(class="form-control-label") }}
+                                                    {% if form.content.errors %}
+                                                    {{ form.content(class="form-control form-control-lg
                                                     is-invalid") }}
                                                     <div class="invalid-feedback">
                                                         {% for error in form.content.errors %}
@@ -63,7 +63,7 @@
                                                         {% endfor %}
                                                     </div>
                                                     {% else %}
-                                                    {{ create_post.content(class="form-control form-control-lg") }}
+                                                    {{ form.content(class="form-control form-control-lg") }}
                                                     {% endif %}
                                                 </div>
 
@@ -77,7 +77,7 @@
                                             </fieldset>
 
                                             <div class="form-group">
-                                                {{ create_post.submit(class="btn btn-outline-info") }}
+                                                {{ form.submit(class="btn btn-outline-info") }}
                                             </div>
 
                                         </form>

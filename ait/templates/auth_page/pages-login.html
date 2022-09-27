@@ -28,6 +28,24 @@
                   {{ form.hidden_tag() }}
                   <fieldset class="form-group">
 
+                    <div class="col-12 mt-3">
+                      <div class="form-group d-flex justify-content-flex-start mt-2 mb-2">
+                        {{ form.role.label(class="form-label pe-5") }}
+                        {% if form.role.errors %}
+                        <div class="invalid-feedback">
+                          {% for error in form.role.errors %}
+                          <span>{{ error }}</span>
+                          {% endfor %}
+                        </div>
+                        {% else %}
+                        <div class="form-check-inline">
+                          {{ form.role(class=" form-check form-check-inline ", type="radio", style="list-style-type:
+                          none;") }}
+                        </div>
+                        {% endif %}
+                      </div>
+                    </div>
+
                     <div class="col-12">
                       <div class="form-group">
                         {{ form.email.label(class="form-label") }}
@@ -67,11 +85,13 @@
                         {{ form.remember.label(class="form-check-label") }}
                       </div>
                     </div>
+
                     <div class="col-12">
                       <div class="btn btn-primary w-100 mt-2">
                         {{ form.submit(class="btn btn-primary w-100") }}
                       </div>
                     </div>
+
                     <div class="col-12">
                       <p class="small mb-0">Don't have account? <a href="{{ url_for('register') }}">Create an
                           account</a></p>
