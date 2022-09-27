@@ -94,7 +94,26 @@ def new_post():
         "likes" : 0,
         "comments" : {},
         "date_created" : datetime.utcnow(),
+        "post_id" : current_user.username + datetime.utcnow().strftime(r'%Y%m%d%H%M%S')
         }
-        db_fire.collection('post').document().set(data)
+        id = current_user.username + data['date_created'].strftime(r'%Y%m%d%H%M%S')
+        db_fire.collection('post').document(id).set(data)
         return redirect(url_for('home'))
     return render_template('new_post.html', title='New Post',form=form, legend='New Post', user_data = user_data)
+
+@app.route('/add_comment/<string:post_id>', methods=['POST'])
+@login_required
+def add_comment(post_id):
+    if request.method == "POST":
+        username = current_user.username
+        date_created = datetime.utcnow()
+        comment = request.form.get("comment")
+        data = {
+            username :{
+            "date_created" : date_created,
+            "comment" : comment
+            }
+        }
+        db_fire.collection('post').document(post_id).set({"comments": data}, merge = True)
+        return redirect(url_for('home'))
+
