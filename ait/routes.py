@@ -101,17 +101,19 @@ def new_post():
         return redirect(url_for('home'))
     return render_template('new_post.html', title='New Post',form=form, legend='New Post', user_data = user_data)
 
-@app.route('/add_comment/<string:post_id>', methods=['POST'])
+@app.route('/comment/<string:post_id>', methods=['POST'])
 @login_required
 def add_comment(post_id):
     if request.method == "POST":
         username = current_user.username
         date_created = datetime.utcnow()
         comment = request.form.get("comment")
+        id = username + date_created.strftime(r'%Y%m%d%H%M%S')
         data = {
-            username :{
+            id :{
             "date_created" : date_created,
-            "comment" : comment
+            "comment" : comment,
+            "username" : current_user.username
             }
         }
         db_fire.collection('post').document(post_id).set({"comments": data}, merge = True)
