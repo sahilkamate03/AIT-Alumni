@@ -1,7 +1,10 @@
-from datetime import datetime
-from flask import  render_template, url_for, redirect, jsonify, flash, request
+import secrets
+from flask import  render_template, url_for, redirect, jsonify, flash, request, abort
 from flask_login import login_user, logout_user, current_user, login_required
 from firebase_admin import auth
+
+import os
+from datetime import datetime
 
 from ait import app, db, bcrypt, db_fire
 from ait import firebase
@@ -53,7 +56,8 @@ def register():
         "role" : form.role.data,
         "add" : "-",
         "phone" : "-",
-        "about" : "Write about yourself."
+        "about" : "Write about yourself.",
+        "profile_url" : ""
         }
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
         user = User(username=form.email.data.split("@")[0], email=form.email.data, password=hashed_password, role = form.role.data)
@@ -65,21 +69,66 @@ def register():
         
     return render_template('./auth_page/pages-register.html', title = 'Register', form =form)
 
+def save_profile(form_media):
+    random_hex = secrets.token_hex(8)
+    _, f_ext = os.path.splitext(form_media.filename)
+    picture_fn = random_hex + f_ext
+    picture_path = os.path.join(app.root_path, 'static/profile_pic', picture_fn)
+    form_media.save(picture_path)
+    return picture_fn
+
 @app.route('/account')
 @login_required
 def account():
     user_data = db_fire.collection(current_user.role).document(current_user.username).get().to_dict()
     return render_template('users-profile.html', user_data = user_data)
 
+@app.route('/account/edit/<string:username>', methods=['POST'])
+@login_required
+def edit_account(username):
+    if username != current_user.username:
+        abort()
+    if request.method == "POST":
+        print(request.form.get("picture_url"))
+        if request.form.get("picture_url"):
+            print(request.form.get("picture_url"))
+        name = request.form.get("fullName")
+        about = request.form.get("about")
+        address = request.form.get("address")
+        phone = request.form.get("phone")
+        twitter = request.form.get("twitter")
+        facebook = request.form.get("facebook")
+        instagram = request.form.get("instagram")
+        linkedin = request.form.get("linkedin")
+        # print(name,about,address,phone,twitter,facebook,instagram,linkedin)
+        data ={
+            'name' : name,
+            'about' : about,
+            'add' : address,
+            'phone' : phone,
+            'twitter' : twitter,
+            'facebook' : facebook,
+            'instagram' : instagram,
+            'linkedin' : linkedin
+        }
+        db_fire.collection(current_user.role).document(username).set(data, merge = True)
+
+    return redirect(url_for('account'))
 
 @app.route('/get_post')
 @login_required
 def get_post():
     view_post = render_template('./post/view_post.html')
-
     data = {'remain': view_post}
     return jsonify(data)
 
+def save_post_media(form_picture,username):
+    random_hex = secrets.token_hex(8)
+    _, f_ext = os.path.splitext(form_picture.filename)
+    picture_fn = random_hex + f_ext
+    picture_path = os.path.join(app.root_path, f'static\media\{username}' , picture_fn)
+    form_picture.save(picture_path)
+    return picture_fn
 
 @app.route('/post/new', methods= ['GET','POST'])
 @login_required
@@ -87,15 +136,22 @@ def new_post():
     form = PostForm()
     user_data = db_fire.collection(current_user.role).document(current_user.username).get().to_dict()
     if form.validate_on_submit():
+            
         data = { "username" : current_user.username,
         "title" : form.title.data,
         "content" : form.content.data,
-        "media" : {},
+        "media" : '',
         "likes" : 0,
         "comments" : {},
         "date_created" : datetime.utcnow(),
+        "profile_url" : current_user.profile_url,
         "post_id" : current_user.username + datetime.utcnow().strftime(r'%Y%m%d%H%M%S')
         }
+        print(form.picture.data)
+        if form.picture.data:
+            picture_file = save_post_media(form.picture.data, current_user.username)
+            data['media'] = picture_file
+
         id = current_user.username + data['date_created'].strftime(r'%Y%m%d%H%M%S')
         db_fire.collection('post').document(id).set(data)
         return redirect(url_for('home'))
@@ -113,7 +169,8 @@ def add_comment(post_id):
             id :{
             "date_created" : date_created,
             "comment" : comment,
-            "username" : current_user.username
+            "username" : current_user.username,
+            "profile_url" : current_user.profile_url
             }
         }
         db_fire.collection('post').document(post_id).set({"comments": data}, merge = True)

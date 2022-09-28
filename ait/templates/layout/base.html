@@ -141,7 +141,12 @@
                 <li class="nav-item dropdown pe-3">
 
                     <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-                        <img src="assets/img/profile-img.jpg" alt="Profile" class="rounded-circle">
+                        {% if current_user.profile_url == '' %}
+                        <img class="rounded-circle me-2"
+                            src="{{ url_for('static',filename='/profile_pic/default.webp' ) }}" width="40" height="40">
+                        {% else %}
+                        <img class="rounded-circle me-2" src="{{current_user.profile_url}}" width="40">
+                        {% endif %}
                         <span class="d-none d-md-block dropdown-toggle ps-2">{{user_data['name']}}</span>
                     </a><!-- End Profile Iamge Icon -->
 
@@ -252,7 +257,7 @@
     {% block content %}
 
     {% endblock content%}}
-    
+
     <!-- ======= Footer ======= -->
     <footer id="footer" class="footer">
         <div class="copyright">

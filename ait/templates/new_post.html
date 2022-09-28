@@ -28,13 +28,24 @@
                                 <!-- Create post box start -->
                                 <div class="d-flex flex-column comment-section">
                                     <div class="bg-light p-2">
-                                        <div class="d-flex flex-row align-items-start"><img
-                                                class="rounded-circle me-2 mt-2" src="https://i.imgur.com/RpzrMR2.jpg"
-                                                width="40">
-                                            <h5 class="card-title">{{user_data['name']}} <span>/{{user_data['role']}}</span></h5>
+                                        <div class="d-flex flex-row align-items-start">
+                                            {% with profile_url = current_user.profile_url %}
+                                            {% if profile_url == '' %}
+                                            <img class="rounded-circle me-2 mt-2"
+                                                src="{{ url_for('static',filename='/profile_pic/default.webp' ) }}"
+                                                width="40" height="40">
+                                            {% else %}
+                                            <img class="rounded-circle me-2 mt-2"
+                                                src="{{post.to_dict()['profile_url']}}" width="40">
+                                            {% endif %}
+                                            {% endwith %}
+
+                                            <h5 class="card-title">{{user_data['name']}}
+                                                <span>/{{user_data['role']}}</span>
+                                            </h5>
 
                                         </div>
-                                        <form method="POST" action="">
+                                        <form method="POST" action="" enctype="multipart/form-data">
                                             {{ form.hidden_tag() }}
                                             <fieldset class="form-group">
                                                 <legend class="border-bottom mb-4">{{ legend }}</legend>
@@ -69,8 +80,13 @@
 
                                                 <!-- file input starts -->
                                                 <div class="mb-3 mt-3">
-
-                                                    <input class="form-control" type="file" id="formFile">
+                                                    {{ form.picture.label() }}
+                                                    {{ form.picture(class="form-control-file") }}
+                                                    {% if form.picture.errors %}
+                                                    {% for error in form.picture.errors %}
+                                                    <span class="text-danger">{{ error }}</span></br>
+                                                    {% endfor %}
+                                                    {% endif %}
                                                 </div>
                                                 <!-- file input ends -->
 

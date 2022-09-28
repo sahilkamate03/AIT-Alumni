@@ -52,8 +52,16 @@
                 <!-- view post box start -->
                 <div class="d-flex flex-column comment-section mt-3">
                   <div class="bg-white p-2">
-                    <div class="d-flex flex-row user-info "><img class="rounded-circle me-2"
-                        src="https://i.imgur.com/RpzrMR2.jpg" width="40">
+
+                    <div class="d-flex flex-row user-info ">
+                      {% with profile_url = post.to_dict()['profile_url'] %}
+                      {% if profile_url == '' %}
+                      <img class="rounded-circle me-2"
+                        src="{{ url_for('static',filename='/profile_pic/default.webp' ) }}" width="40" height="40">
+                      {% else %}
+                      <img class="rounded-circle me-2" src="{{post.to_dict()['profile_url']}}" width="40">
+                      {% endif %}
+                      {% endwith %}
 
                       <div class="d-flex flex-column justify-content-start ml-2 "><span
                           class="d-block font-weight-bold name">{{post.to_dict()['username']}}</span><span
@@ -63,6 +71,13 @@
                     <div class="mt-2">
                       <h6 class="card-title">{{post.to_dict()['title']}}</h6>
                       <p class="comment-text">{{post.to_dict()['content']}}</p>
+                      {% if post.to_dict()['media'].split('.')[1] != 'mp4' %}
+                      <img src="{{ url_for('static', filename='media/'+post.to_dict()['media'] ) }}" alt=""  class="img-fluid">
+                      {% else %}
+                      <video width="100%"  controls>
+                        <source src="{{ url_for('static', filename='media/'+post.to_dict()['media'] ) }}" type="video/mp4">
+                      </video>
+                      {% endif %}
                     </div>
                   </div>
                   <div class="bg-white">
@@ -80,8 +95,15 @@
                   </div>
                   <div class="bg-light p-2">
                     <form action="/comment/{{post.to_dict()['post_id']}}" method="post">
-                      <div class="d-flex flex-row align-items-start"><img class="rounded-circle me-2"
-                          src="https://i.imgur.com/RpzrMR2.jpg" width="40">
+                      <div class="d-flex flex-row align-items-start">
+                        {% with profile_url = current_user.profile_url %}
+                        {% if current_user.profile_url == '' %}
+                        <img class="rounded-circle me-2"
+                          src="{{ url_for('static',filename='/profile_pic/default.webp' ) }}" width="40" height="40">
+                        {% else %}
+                        <img class="rounded-circle me-2" src="{{current_user.profile_url}}" width="40">
+                        {% endif %}
+                        {% endwith %}
                         <textarea class="form-control ml-1 shadow-none textarea" name="comment"></textarea>
                       </div>
                       <div class="mt-2 text-right d-flex justify-content-end">
@@ -99,23 +121,24 @@
                     <div class="card-body mt-3">
                       {% if post.to_dict()['comments'] %}
                       {% with comments= post.to_dict()['comments'] %}
-                      {% for key,comment in comments.items() %}                    
+                      {% for key,comment in comments.items() %}
                       <!-- comment content box start -->
-                      <div class="d-flex flex-row user-info "><img class="rounded-circle me-2"
-                          src="https://i.imgur.com/RpzrMR2.jpg" width="40">
+                      <div class="d-flex flex-row user-info ">
 
-                        <div class="d-flex flex-column justify-content-start ml-2 ">{{comment['username']}}<span
-                            class="d-block font-weight-bold name">
-                          </span><span class="date text-black-50">commented -
+                        <div class="d-flex flex-row justify-content-start ml-2 ">
+                          <p style=" color:rgb(28, 176, 250);">
+                            {{comment['username']}} </p><span class="d-block font-weight-bold name">
+                          </span><span class="date text-black-50">" commented -
                             {{comment['date_created'].strftime('%d/%m/%Y')}}
-                            </span></div>
+                          </span>
+                        </div>
                       </div>
-                      <div class="mt-2 ps-5">
+                      <div class="mt-2">
                         <p class="comment-text ">
                           {{comment['comment']}}
                         </p>
                       </div>
-                      <!-- comment content box ends -->      
+                      <!-- comment content box ends -->
                       {% endfor %}
                       {% endwith %}
 
