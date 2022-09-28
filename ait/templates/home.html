@@ -72,22 +72,34 @@
                       <h6 class="card-title">{{post.to_dict()['title']}}</h6>
                       <p class="comment-text">{{post.to_dict()['content']}}</p>
                       {% if post.to_dict()['media'].split('.')[1] != 'mp4' %}
-                      <img src="{{ url_for('static', filename='media/'+post.to_dict()['media'] ) }}" alt=""  class="img-fluid">
+                      <img src="{{ url_for('static', filename='media/'+post.to_dict()['media'] ) }}" alt=""
+                        class="img-fluid">
                       {% else %}
-                      <video width="100%"  controls>
-                        <source src="{{ url_for('static', filename='media/'+post.to_dict()['media'] ) }}" type="video/mp4">
+                      <video width="100%" controls>
+                        <source src="{{ url_for('static', filename='media/'+post.to_dict()['media'] ) }}"
+                          type="video/mp4">
                       </video>
                       {% endif %}
                     </div>
                   </div>
                   <div class="bg-white">
                     <div class="d-flex flex-row fs-12">
-                      <div class="like p-2 cursor"><i class="fa fa-thumbs-o-up"></i><span
-                          class="ml-1">Like({{post.to_dict()['likes']}}) </span>
-                      </div>
+                      <form action="/like/{{post.to_dict()['post_id']}}" method="post">
+                        <div class="like p-2 cursor"><i class="fa fa-thumbs-o-up"></i>
+                          <span class="">
+                            <button class=" btn-outline-primary btn-sm btn shadow-none"
+                              type="submit">Like({{post.to_dict()['likes']|length}})
+                            </button>
+                          </span>
+                        </div>
+
+                      </form>
                       <div class="like p-2 cursor"><i class="fa fa-commenting-o"></i><span class="ml-1"><a class=""
                             data-bs-toggle="collapse" href="#{{post.to_dict()['post_id']}}" role="button"
-                            aria-expanded="false">Comment({{post.to_dict()['comments']|length}})</a></span>
+                            aria-expanded="false">
+                            <button class=" btn-outline-primary btn-sm btn shadow-none">
+                              Comment({{post.to_dict()['comments']|length}})</button>
+                          </a></span>
                       </div>
                       <!-- <div class="like p-2 cursor"><i class="fa fa-share"></i><span class="ml-1">Share</span>
                       </div> -->

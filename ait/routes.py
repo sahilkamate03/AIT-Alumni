@@ -141,7 +141,7 @@ def new_post():
         "title" : form.title.data,
         "content" : form.content.data,
         "media" : '',
-        "likes" : 0,
+        "likes" : [],
         "comments" : {},
         "date_created" : datetime.utcnow(),
         "profile_url" : current_user.profile_url,
@@ -174,5 +174,20 @@ def add_comment(post_id):
             }
         }
         db_fire.collection('post').document(post_id).set({"comments": data}, merge = True)
+        return redirect(url_for('home'))
+
+@app.route('/like/<string:post_id>', methods=['POST'])
+@login_required
+def like(post_id):
+        if request.method == "POST":
+            result = db_fire.collection('post').document(post_id).get().to_dict()
+            if current_user.username in result['likes']:
+                temp = db_fire.collection('post').document(post_id).get().to_dict()['likes']
+                temp.remove(current_user.username)
+                db_fire.collection('post').document(post_id).set({'likes': temp}, merge =True)
+
+            else:
+                db_fire.collection('post').document(post_id).set({'likes': [current_user.username]}, merge = True)
+
         return redirect(url_for('home'))
 
