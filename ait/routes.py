@@ -126,7 +126,7 @@ def save_post_media(form_picture,username):
     random_hex = secrets.token_hex(8)
     _, f_ext = os.path.splitext(form_picture.filename)
     picture_fn = random_hex + f_ext
-    picture_path = os.path.join(app.root_path, f'static\media\{username}' , picture_fn)
+    picture_path = os.path.join(app.root_path, f'static\media' , picture_fn)
     form_picture.save(picture_path)
     return picture_fn
 
@@ -145,7 +145,8 @@ def new_post():
         "comments" : {},
         "date_created" : datetime.utcnow(),
         "profile_url" : current_user.profile_url,
-        "post_id" : current_user.username + datetime.utcnow().strftime(r'%Y%m%d%H%M%S')
+        "post_id" : current_user.username + datetime.utcnow().strftime(r'%Y%m%d%H%M%S'),
+        "role" : current_user.role
         }
         print(form.picture.data)
         if form.picture.data:
@@ -190,4 +191,14 @@ def like(post_id):
                 db_fire.collection('post').document(post_id).set({'likes': [current_user.username]}, merge = True)
 
         return redirect(url_for('home'))
+
+@app.route('/user/<string:role>/<string:username>')
+@login_required
+def user(username,role):
+    if username == current_user.username:
+        return redirect (url_for('account'))
+    else:
+        posts = db_fire.collection('post').where('username','==',username).get()
+        user_data = db_fire.collection(role).document(username).get().to_dict()
+        return render_template('user.html', user_data = user_data, posts = posts )
 
