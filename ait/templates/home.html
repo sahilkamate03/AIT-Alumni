@@ -63,10 +63,20 @@
                       {% endif %}
                       {% endwith %}
 
-                      <div class="d-flex flex-column justify-content-start ml-2 "><span
-                          class="d-block font-weight-bold name">{{post.to_dict()['username']}}</span><span
-                          class="date text-black-50">Shared publicly -
-                          {{post.to_dict()['date_created'].strftime('%d/%m/%Y')}}</span></div>
+                      <div class="d-flex flex-column justify-content-start ml-2 ">
+                        {% if post.to_dict()['role'] == 'Student' %}
+                        <a href="/user/Student/{{post.to_dict()['username']}}"><span
+                            class="d-block font-weight-bold name">{{post.to_dict()['username']}}</span>
+                        </a>
+                        {% endif %}
+                        {% if post.to_dict()['role'] == 'Alumini' %}
+                        <a href="/user/Alumini/{{post.to_dict()['username']}}"><span
+                            class="d-block font-weight-bold name">{{post.to_dict()['username']}}</span>
+                        </a>
+                        {% endif %}
+                        <span class="date text-black-50">Shared publicly -
+                          {{post.to_dict()['date_created'].strftime('%d/%m/%Y')}}</span>
+                      </div>
                     </div>
                     <div class="mt-2">
                       <h6 class="card-title">{{post.to_dict()['title']}}</h6>
