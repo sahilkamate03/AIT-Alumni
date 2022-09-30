@@ -1,0 +1,239 @@
+{% extends './layout/base.html' %}
+{% block content %}
+
+<main id="main" class="main">
+
+  <!-- Page Title -->
+  <div class="pagetitle">
+    <h1>Dashboard</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('home' ) }}">Home</a></li>
+        <li class="breadcrumb-item active">Dashboard</li>
+      </ol>
+    </nav>
+  </div><!-- End Page Title -->
+
+  <section class="section dashboard">
+    <div class="row">
+
+      <!-- Left side columns -->
+      <div class="col-lg-8">
+        <div class="row">
+
+          <div class="col-12">
+            <div class="card">
+
+              <div class="filter">
+                <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                  <li class="dropdown-header text-start">
+                    <h6>Filter</h6>
+                  </li>
+
+                  <li><a class="dropdown-item" href="/home/top">Top</a></li>
+                  <li><a class="dropdown-item" href="/home/latest">Latest</a></li>
+                </ul>
+              </div>
+
+              <div class="card-body">
+                <h5 class="card-title">Hiring <span>/post</span></h5>
+              </div>
+            </div>
+          </div><!-- End View Post -->
+
+          <!-- View Post-->
+          {% for post in posts %}
+          <div class="col-12">
+            <div class="card">
+
+              <div class="card-body">
+
+                <!-- view post box start -->
+                <div class="d-flex flex-column comment-section mt-3">
+                  <div class="bg-white p-2">
+
+                    <div class="d-flex flex-row user-info ">
+                      {% with profile_url = post.to_dict()['profile_url'] %}
+                      {% if profile_url == '' %}
+                      <img class="rounded-circle me-2"
+                        src="{{ url_for('static',filename='/profile_pic/default.webp' ) }}" width="40" height="40">
+                      {% else %}
+                      <img class="rounded-circle me-2" src="{{post.to_dict()['profile_url']}}" width="40">
+                      {% endif %}
+                      {% endwith %}
+
+                      <div class="d-flex flex-column justify-content-start ml-2 ">
+                        {% if post.to_dict()['role'] == 'Student' %}
+                        <a href="/user/Student/{{post.to_dict()['username']}}"><span
+                            class="d-block font-weight-bold name">{{post.to_dict()['username']}}</span>
+                        </a>
+                        {% endif %}
+                        {% if post.to_dict()['role'] == 'Alumini' %}
+                        <a href="/user/Alumini/{{post.to_dict()['username']}}"><span
+                            class="d-block font-weight-bold name">{{post.to_dict()['username']}}</span>
+                        </a>
+                        {% endif %}
+                        <span class="date text-black-50">Shared publicly -
+                          {{post.to_dict()['date_created'].strftime('%d/%m/%Y')}}</span>
+                      </div>
+                    </div>
+                    <div class="mt-2">
+                      <h6 class="card-title">{{post.to_dict()['title']}}</h6>
+                      <p class="comment-text">{{post.to_dict()['content']}}</p>
+                      {% if post.to_dict()['media'].split('.')[1] != 'mp4' %}
+                      <img src="{{ url_for('static', filename='media/'+post.to_dict()['media'] ) }}" alt=""
+                        class="img-fluid">
+                      {% else %}
+                      <video width="100%" controls>
+                        <source src="{{ url_for('static', filename='media/'+post.to_dict()['media'] ) }}"
+                          type="video/mp4">
+                      </video>
+                      {% endif %}
+                    </div>
+                  </div>
+                  <div class="bg-white">
+                    <div class="d-flex flex-row fs-12">
+                      <form action="/like/{{post.to_dict()['post_id']}}" method="post">
+                        <div class="like p-2 cursor"><i class="fa fa-thumbs-o-up"></i>
+                          <span class="">
+                            <button class=" btn-outline-primary btn-sm btn shadow-none"
+                              type="submit">Like({{post.to_dict()['likes']|length}})
+                            </button>
+                          </span>
+                        </div>
+
+                      </form>
+                      <div class="like p-2 cursor"><i class="fa fa-commenting-o"></i><span class="ml-1"><a class=""
+                            data-bs-toggle="collapse" href="#{{post.to_dict()['post_id']}}" role="button"
+                            aria-expanded="false">
+                            <button class=" btn-outline-primary btn-sm btn shadow-none">
+                              Comment({{post.to_dict()['comments']|length}})</button>
+                          </a></span>
+                      </div>
+                      <!-- <div class="like p-2 cursor"><i class="fa fa-share"></i><span class="ml-1">Share</span>
+                      </div> -->
+                    </div>
+                  </div>
+                  <div class="bg-light p-2">
+                    <form action="/comment/{{post.to_dict()['post_id']}}" method="post">
+                      <div class="d-flex flex-row align-items-start">
+                        {% with profile_url = current_user.profile_url %}
+                        {% if current_user.profile_url == '' %}
+                        <img class="rounded-circle me-2"
+                          src="{{ url_for('static',filename='/profile_pic/default.webp' ) }}" width="40" height="40">
+                        {% else %}
+                        <img class="rounded-circle me-2" src="{{current_user.profile_url}}" width="40">
+                        {% endif %}
+                        {% endwith %}
+                        <textarea class="form-control ml-1 shadow-none textarea" name="comment"></textarea>
+                      </div>
+                      <div class="mt-2 text-right d-flex justify-content-end">
+                        <button class="btn btn-outline-primary btn-sm ml-1 shadow-none" type="submit">Post
+                          Comment
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+
+                <!-- comment box starts -->
+                <div class="collapse" id="{{post.to_dict()['post_id']}}">
+                  <div class="card card-body mt-3 ">
+                    <div class="card-body mt-3">
+                      {% if post.to_dict()['comments'] %}
+                      {% with comments= post.to_dict()['comments'] %}
+                      {% for key,comment in comments.items() %}
+                      <!-- comment content box start -->
+                      <div class="d-flex flex-row user-info ">
+
+                        <div class="d-flex flex-row justify-content-start ml-2 ">
+                          <p style=" color:rgb(28, 176, 250);">
+                            {{comment['username']}} </p><span class="d-block font-weight-bold name">
+                          </span><span class="date text-black-50">" commented -
+                            {{comment['date_created'].strftime('%d/%m/%Y')}}
+                          </span>
+                        </div>
+                      </div>
+                      <div class="mt-2">
+                        <p class="comment-text ">
+                          {{comment['comment']}}
+                        </p>
+                      </div>
+                      <!-- comment content box ends -->
+                      {% endfor %}
+                      {% endwith %}
+
+                      {% else %}
+                      <div class="mt-2">
+                        <p class="comment-text">No Comment.</p>
+                      </div>
+                      {% endif %}
+
+                    </div>
+                  </div>
+                </div>
+                <!-- comment box ends -->
+
+                <!-- view post box ends -->
+              </div>
+            </div>
+          </div><!-- End View Post -->
+          {% endfor %}
+
+        </div>
+      </div><!-- End Left side columns -->
+
+      <!-- Right side columns -->
+      <div class="col-lg-4">
+        <!-- News & Updates Traffic -->
+        <div class="card">
+          <div class="card-body pb-0">
+            <h5 class="card-title">News &amp; Updates <span>| Today</span></h5>
+
+            <div class="news">
+              <div class="post-item clearfix">
+                <img src="assets/img/news-1.jpg" alt="">
+                <h4><a href="#">Nihil blanditiis at in nihil autem</a></h4>
+                <p>Sit recusandae non aspernatur laboriosam. Quia enim eligendi sed ut harum...</p>
+              </div>
+
+              <div class="post-item clearfix">
+                <img src="assets/img/news-2.jpg" alt="">
+                <h4><a href="#">Quidem autem et impedit</a></h4>
+                <p>Illo nemo neque maiores vitae officiis cum eum turos elan dries werona nande...</p>
+              </div>
+
+              <div class="post-item clearfix">
+                <img src="assets/img/news-3.jpg" alt="">
+                <h4><a href="#">Id quia et et ut maxime similique occaecati ut</a></h4>
+                <p>Fugiat voluptas vero eaque accusantium eos. Consequuntur sed ipsam et totam...</p>
+              </div>
+
+              <div class="post-item clearfix">
+                <img src="assets/img/news-4.jpg" alt="">
+                <h4><a href="#">Laborum corporis quo dara net para</a></h4>
+                <p>Qui enim quia optio. Eligendi aut asperiores enim repellendusvel rerum cuder...</p>
+              </div>
+
+              <div class="post-item clearfix">
+                <img src="assets/img/news-5.jpg" alt="">
+                <h4><a href="#">Et dolores corrupti quae illo quod dolor</a></h4>
+                <p>Odit ut eveniet modi reiciendis. Atque cupiditate libero beatae dignissimos eius...</p>
+              </div>
+
+            </div><!-- End sidebar recent posts-->
+
+          </div>
+        </div><!-- End News & Updates -->
+
+      </div><!-- End Right side columns -->
+
+    </div>
+  </section>
+
+</main><!-- End #main -->
+
+<!-- home js starts -->
+<script src="{{ url_for('static', filename = 'assets/js/home.js' ) }}"></script>
+{% endblock content%}}

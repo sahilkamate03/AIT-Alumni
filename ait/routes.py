@@ -1,7 +1,8 @@
+from heapq import merge
 import secrets
 from flask import  render_template, url_for, redirect, jsonify, flash, request, abort
 from flask_login import login_user, logout_user, current_user, login_required
-from firebase_admin import auth
+from firebase_admin import auth, firestore
 
 import os
 from datetime import datetime
@@ -15,12 +16,20 @@ from ait.forms import RegistrationForm, LoginForm, PostForm
 
 
 @app.route('/')
-@app.route('/home')
+@app.route('/home/latest')
 @login_required
 def home():
     user_data = db_fire.collection(current_user.role).document(current_user.username).get().to_dict()
     posts = db_fire.collection('post').get()
     return render_template('home.html', title = 'Home', user_data = user_data, posts = posts)
+
+@app.route('/')
+@app.route('/home/top')
+@login_required
+def home_top():
+    user_data = db_fire.collection(current_user.role).document(current_user.username).get().to_dict()
+    posts = db_fire.collection("post").order_by("likes", direction=firestore.Query.DESCENDING).get()
+    return render_template('home_top.html', title = 'Home', user_data = user_data, posts = posts)
 
 @app.route('/login', methods= ['GET', 'POST'])
 def login():
@@ -69,12 +78,12 @@ def register():
         
     return render_template('./auth_page/pages-register.html', title = 'Register', form =form)
 
-def save_profile(form_media):
+def save_profile(form_picture):
     random_hex = secrets.token_hex(8)
-    _, f_ext = os.path.splitext(form_media.filename)
+    _, f_ext = os.path.splitext(form_picture.filename)
     picture_fn = random_hex + f_ext
-    picture_path = os.path.join(app.root_path, 'static/profile_pic', picture_fn)
-    form_media.save(picture_path)
+    picture_path = os.path.join(app.root_path, f'static\profile_pic' , picture_fn)
+    form_picture.save(picture_path)
     return picture_fn
 
 @app.route('/account')
@@ -89,9 +98,15 @@ def edit_account(username):
     if username != current_user.username:
         abort()
     if request.method == "POST":
-        print(request.form.get("picture_url"))
-        if request.form.get("picture_url"):
-            print(request.form.get("picture_url"))
+        picture_url = request.files["picture_url"]
+        if picture_url.filename:
+            final = save_profile(picture_url)
+            current_user.profile_url = final
+            print('hello')
+            print(current_user.profile_url)
+            print('world')
+        # if picture_url:
+        #     save_profile = 
         name = request.form.get("fullName")
         about = request.form.get("about")
         address = request.form.get("address")
@@ -100,7 +115,6 @@ def edit_account(username):
         facebook = request.form.get("facebook")
         instagram = request.form.get("instagram")
         linkedin = request.form.get("linkedin")
-        # print(name,about,address,phone,twitter,facebook,instagram,linkedin)
         data ={
             'name' : name,
             'about' : about,
@@ -133,6 +147,8 @@ def save_post_media(form_picture,username):
 @app.route('/post/new', methods= ['GET','POST'])
 @login_required
 def new_post():
+    if current_user.role != "Alumini":
+        abort(403)
     form = PostForm()
     user_data = db_fire.collection(current_user.role).document(current_user.username).get().to_dict()
     if form.validate_on_submit():
@@ -148,7 +164,6 @@ def new_post():
         "post_id" : current_user.username + datetime.utcnow().strftime(r'%Y%m%d%H%M%S'),
         "role" : current_user.role
         }
-        print(form.picture.data)
         if form.picture.data:
             picture_file = save_post_media(form.picture.data, current_user.username)
             data['media'] = picture_file
@@ -199,6 +214,69 @@ def user(username,role):
         return redirect (url_for('account'))
     else:
         posts = db_fire.collection('post').where('username','==',username).get()
-        user_data = db_fire.collection(role).document(username).get().to_dict()
-        return render_template('user.html', user_data = user_data, posts = posts )
+        user_data = db_fire.collection(current_user.role).document(current_user.username).get().to_dict()
+        profile_data = db_fire.collection(role).document(username).get().to_dict()
+        type = db_fire.collection('connection').document(username).get().to_dict()
+        count = 0
+        for t in type.values():
+            if username in t:
+                if (count == 0):
+                    value = "accept"
+                else:
+                    value = "pending"
+        print(value)
+        return render_template('user.html', profile_data = profile_data,user_data = user_data, posts = posts )
 
+#--------------------------connection-----------------------------------------
+
+@app.route('/connection/send/<string:username>')
+@login_required
+def send_req(username):
+    if username == current_user.username:
+        abort(403)
+    else:
+        doc_ref =   db_fire.collection('connection').document(username)
+        doc = doc_ref.get()
+
+        if doc.exists:
+            data = db_fire.collection('connection').document(username).get().to_dict()['pending']
+            data.append(username)
+            db_fire.collection('connection').document(username).set({'pending': data},merge = True)
+
+        else:
+            db_fire.collection('connection').document(username).set({'pending': [current_user.username]})
+
+        user = User.query.filter_by(username=username).first()
+        role = user.role
+
+        return redirect(url_for('user',username = username, role = role))
+
+@app.route('/connection/<string:type>/<string:username>')
+@login_required
+def action_req(username,type):
+    if username == current_user.username:
+        abort(403)
+    else:
+        doc_ref =   db_fire.collection('connection').document(current_user.username)
+        doc = doc_ref.get()
+
+        if doc.exists:
+            if type == "accept":
+                data = doc.to_dict()['pending']
+                data.remove(username)
+                
+                if 'accept' in doc.to_dict().keys():
+                    accept_data = doc.to_dict()['accept']
+                    accept_data.append(username)
+                else:
+                    accept_data = [username]
+                
+                doc_ref.set({'accept': accept_data},merge = True)
+                doc_ref.set({'pending': data},merge = True)
+
+            if type == "reject":
+                data = doc.to_dict()['pending']
+                data.remove(username)
+                doc_ref.set({'pending': data},merge = True)
+
+        return redirect(url_for('home'))
