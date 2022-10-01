@@ -222,16 +222,12 @@ def user(username,role):
         posts = db_fire.collection('post').where('username','==',username).get()
         user_data = db_fire.collection(current_user.role).document(current_user.username).get().to_dict()
         profile_data = db_fire.collection(role).document(username).get().to_dict()
-        type = db_fire.collection('connection').document(username).get().to_dict()
-        count = 0
-        value = None
-        for t in type.values():
-            if username in t:
-                if (count == 0):
-                    value = "accept"
-                else:
-                    value = "pending"
-        
+        type = db_fire.collection('connection').document(current_user.username).get().to_dict()
+        if username in type.keys():
+            value = True
+        else: 
+            value = False
+        print(value)
         return render_template('user.html', profile_data = profile_data,user_data = user_data, posts = posts, value = value  )
 
 
@@ -240,9 +236,12 @@ def user(username,role):
 @app.route('/connection')
 @login_required
 def connection():
-    posts = db_fire.collection('post').get()
+    doc_ref = db_fire.collection('connection').document(current_user.username)
+    doc = doc_ref.get()
+    type = db_fire.collection('connection').document(current_user.username).get().to_dict()
+    print(type)
     user_data = db_fire.collection(current_user.role).document(current_user.username).get().to_dict()
-    return render_template('connection.html', user_data = user_data, posts = posts)
+    return render_template('connection.html', user_data = user_data, type = type)
 
 @app.route('/connection/send/<string:username>')
 @login_required
@@ -251,16 +250,31 @@ def send_req(username):
         abort(403)
     else:
         doc_ref =   db_fire.collection('connection').document(username)
-        doc = doc_ref.get()
+        user_data = db_fire.collection('Alumini').document(username).get().to_dict()
+        data = db_fire.collection('connection').document(current_user.username).get().to_dict()
+        data.update( 
+            {user_data['username'] :{
+            'username' : user_data['username'],
+            'profile_url' : user_data['profile_url'],
+            'created_at' : datetime.utcnow()
+            }
+            })
+        db_fire.collection('connection').document(current_user.username).set( data ,merge = True)
 
-        if doc.exists:
-            data = db_fire.collection('connection').document(username).get().to_dict()['pending']
-            data.append(username)
-            db_fire.collection('connection').document(username).set({'pending': data},merge = True)
+        user = User.query.filter_by(username=username).first()
+        role = user.role
 
-        else:
-            db_fire.collection('connection').document(username).set({'pending': [current_user.username]})
+        return redirect(url_for('user',username = username, role = role))
 
+@app.route('/connection/remove/<string:username>')
+@login_required
+def remove_req(username):
+    if username == current_user.username:
+        abort(403)
+    else:
+        data_user = db_fire.collection('connection').document(current_user.username).get().to_dict()
+        data_user.pop(username,None)
+        db_fire.collection('connection').document(current_user.username).set( data_user ,merge = True)
         user = User.query.filter_by(username=username).first()
         role = user.role
 
