@@ -1,13 +1,16 @@
 from heapq import merge
 import secrets
+from tkinter.messagebox import NO
 from flask import  render_template, url_for, redirect, jsonify, flash, request, abort
 from flask_login import login_user, logout_user, current_user, login_required
+from flask_socketio import send
+
 from firebase_admin import auth, firestore
 
 import os
 from datetime import datetime
 
-from ait import app, db, bcrypt, db_fire
+from ait import app, db, bcrypt, db_fire, socketio
 from ait import firebase
 from ait.forms import PostForm
 from ait.models import User
@@ -102,6 +105,7 @@ def edit_account(username):
         if picture_url.filename:
             final = save_profile(picture_url)
             current_user.profile_url = final
+            db.session.commit()
             print('hello')
             print(current_user.profile_url)
             print('world')
@@ -115,6 +119,7 @@ def edit_account(username):
         facebook = request.form.get("facebook")
         instagram = request.form.get("instagram")
         linkedin = request.form.get("linkedin")
+        cv_link = request.form.get("cv_link")
         data ={
             'name' : name,
             'about' : about,
@@ -123,7 +128,8 @@ def edit_account(username):
             'twitter' : twitter,
             'facebook' : facebook,
             'instagram' : instagram,
-            'linkedin' : linkedin
+            'linkedin' : linkedin,
+            'cv_link' : cv_link
         }
         db_fire.collection(current_user.role).document(username).set(data, merge = True)
 
@@ -218,16 +224,25 @@ def user(username,role):
         profile_data = db_fire.collection(role).document(username).get().to_dict()
         type = db_fire.collection('connection').document(username).get().to_dict()
         count = 0
+        value = None
         for t in type.values():
             if username in t:
                 if (count == 0):
                     value = "accept"
                 else:
                     value = "pending"
-        print(value)
-        return render_template('user.html', profile_data = profile_data,user_data = user_data, posts = posts )
+        
+        return render_template('user.html', profile_data = profile_data,user_data = user_data, posts = posts, value = value  )
+
 
 #--------------------------connection-----------------------------------------
+
+@app.route('/connection')
+@login_required
+def connection():
+    posts = db_fire.collection('post').get()
+    user_data = db_fire.collection(current_user.role).document(current_user.username).get().to_dict()
+    return render_template('connection.html', user_data = user_data, posts = posts)
 
 @app.route('/connection/send/<string:username>')
 @login_required
@@ -280,3 +295,26 @@ def action_req(username,type):
                 doc_ref.set({'pending': data},merge = True)
 
         return redirect(url_for('home'))
+
+#--------------------------chat-app--------------------------------------------------
+@socketio.on("message")
+def sendMessage(message):
+    message = current_user.username+ ": " + message
+    print(message)
+    send(message, broadcast=True)
+
+@app.route('/chat')
+@login_required
+def chat():
+    username = current_user.username
+    user_data = db_fire.collection(current_user.role).document(current_user.username).get().to_dict()
+
+    return render_template('chat.html', username = username, user_data = user_data)
+
+#----------------------------------Error handle ---------------------------------------------------
+
+@app.errorhandler(404)
+def page_not_found(e):
+    # note that we set the 404 status explicitly
+    user_data = db_fire.collection(current_user.role).document(current_user.username).get().to_dict()
+    return render_template('pages-error-404.html', user_data = user_data), 404

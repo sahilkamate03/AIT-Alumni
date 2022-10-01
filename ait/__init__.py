@@ -3,6 +3,8 @@ from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 import firebase_admin
+from flask_socketio import SocketIO, send
+
 from firebase_admin import credentials
 from firebase_admin import firestore
 import pyrebase
@@ -12,6 +14,8 @@ from datetime import datetime
 
 
 app = Flask(__name__)
+socketio = SocketIO(app, cors_allowed_origins="*")
+
 app.config['SECRET_KEY'] = '5791628bb0b13ce0c676dfde280ba245'
 app.config['SQLALCHEMY_DATABASE_URI']= 'sqlite:///site.db'
 

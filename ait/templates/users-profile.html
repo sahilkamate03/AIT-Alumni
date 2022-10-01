@@ -21,19 +21,30 @@
           <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
             {% with profile_url = current_user.profile_url %}
             {% if current_user.profile_url == '' %}
-            <img class="rounded-circle" src="{{ url_for('static',filename='/profile_pic/default.webp' ) }}" alt="Profile">
+            <img class="rounded-circle" style="aspect-ratio: 1;"
+              src="{{ url_for('static',filename='/profile_pic/default.webp' ) }}" alt="Profile">
             {% else %}
-            <img class="rounded-circle" src="{{current_user.profile_url}}" alt="Profile">
+            {% with profile_add = current_user.profile_url %}
+            <img class="rounded-circle" style="aspect-ratio: 1;"
+              src="{{ url_for('static', filename='/profile_pic/'+profile_add ) }}" alt="Profile">
+            {% endwith %}
             {% endif %}
             {% endwith %}
             <h2>{{ user_data['name']}}</h2>
             <h3>{{current_user.role}}</h3>
             <div class="social-links mt-2">
-              <a href="#" class="twitter"><i class="bi bi-twitter"></i></a>
-              <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
-              <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
-              <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
+              <a href="{{user_data['twitter']}}" class="twitter"><i class="bi bi-twitter"></i></a>
+              <a href="{{user_data['facebook']}}" class="facebook"><i class="fa-brands fa-github"></i></a>
+              <a href="{{user_data['instagram']}}" class="instagram"><i class="bi bi-instagram"></i></a>
+              <a href="{{user_data['linkedin']}}" class="linkedin"><i class="bi bi-linkedin"></i></a>
             </div>
+
+            {% if user_data['cv_link'] %}
+            <a href="{{user_data['cv_link']}}">
+              <button type="button" class="btn btn-primary mt-3">Download CV</button>
+            </a>
+            {% endif %}
+
           </div>
         </div>
 
@@ -112,14 +123,16 @@
                       {% if current_user.profile_url == '' %}
                       <img src="{{ url_for('static',filename='/profile_pic/default.webp' ) }}" alt="Profile">
                       {% else %}
-                      <img src="{{current_user.profile_url}}" alt="Profile">
+                      {% with profile_add = current_user.profile_url %}
+                      <img src="{{ url_for('static', filename='/profile_pic/'+profile_add ) }}" alt="Profile">
+                      {% endwith %}
                       {% endif %}
                       {% endwith %}
 
                       <div class="pt-2">
                         <!-- <a href="#" class="btn btn-primary btn-sm" title="Upload new profile image"><i
                             class="bi bi-upload"></i></a> -->
-                            <input class="form-control" type="file" id="formFile" name = "picture_url" id ="picture_url">
+                        <input class="form-control" type="file" id="formFile" name="picture_url" id="picture_url">
                         <!-- <a href="#" class="btn btn-danger btn-sm" title="Remove my profile image"><i
                             class="bi bi-trash"></i></a> -->
                       </div>
@@ -161,29 +174,32 @@
                   <div class="row mb-3">
                     <label for="Phone" class="col-md-4 col-lg-3 col-form-label">Phone</label>
                     <div class="col-md-8 col-lg-9">
-                      <input name="phone" type="text" class="form-control" id="Phone" value="{{user_data['phone']}}">
+                      <input name="phone" type="text" class="form-control" id="Phone" value="{{user_data['phone']}}"
+                        maxlength="10" minlength="10">
                     </div>
                   </div>
 
                   <div class="row mb-3">
                     <label for="Email" class="col-md-4 col-lg-3 col-form-label">Email</label>
                     <div class="col-md-8 col-lg-9">
-                      <input name="email" type="email" class="form-control" id="Email" value="{{user_data['email']}}" disabled>
+                      <input name="email" type="email" class="form-control" id="Email" value="{{user_data['email']}}"
+                        disabled>
                     </div>
                   </div>
 
                   <div class="row mb-3">
                     <label for="Twitter" class="col-md-4 col-lg-3 col-form-label">Twitter Profile</label>
                     <div class="col-md-8 col-lg-9">
-                      <input name="twitter" type="text" class="form-control" id="Twitter" value="https://twitter.com/#">
+                      <input name="twitter" type="text" class="form-control" id="Twitter"
+                        value="{{user_data['twitter']}}">
                     </div>
                   </div>
 
                   <div class="row mb-3">
-                    <label for="Facebook" class="col-md-4 col-lg-3 col-form-label">Facebook Profile</label>
+                    <label for="Facebook" class="col-md-4 col-lg-3 col-form-label">Github Profile</label>
                     <div class="col-md-8 col-lg-9">
                       <input name="facebook" type="text" class="form-control" id="Facebook"
-                        value="https://facebook.com/#">
+                        value="{{user_data['facebook']}}">
                     </div>
                   </div>
 
@@ -191,7 +207,7 @@
                     <label for="Instagram" class="col-md-4 col-lg-3 col-form-label">Instagram Profile</label>
                     <div class="col-md-8 col-lg-9">
                       <input name="instagram" type="text" class="form-control" id="Instagram"
-                        value="https://instagram.com/#">
+                        value="{{user_data['instagram']}}">
                     </div>
                   </div>
 
@@ -199,7 +215,15 @@
                     <label for="Linkedin" class="col-md-4 col-lg-3 col-form-label">Linkedin Profile</label>
                     <div class="col-md-8 col-lg-9">
                       <input name="linkedin" type="text" class="form-control" id="Linkedin"
-                        value="https://linkedin.com/#">
+                        value="{{user_data['linkedin']}}">
+                    </div>
+                  </div>
+
+                  <div class="row mb-3">
+                    <label for="Linkedin" class="col-md-4 col-lg-3 col-form-label">CV Link</label>
+                    <div class="col-md-8 col-lg-9">
+                      <input name="cv_link" type="text" class="form-control" id="cv_btn"
+                        value="{{user_data['cv_link']}}">
                     </div>
                   </div>
 

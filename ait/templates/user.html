@@ -25,17 +25,16 @@
                         <div class="card">
 
                             <div class="card-body">
-                                <h5 class="card-title">Reports <span>/Today</span></h5>
 
                                 <div class="tab-pane fade show active profile-overview" id="profile-overview">
                                     <h5 class="card-title">About</h5>
-                                    <p class="small fst-italic">{{user_data['about']}}</p>
+                                    <p class="small fst-italic">{{profile_data['about']}}</p>
 
                                     <h5 class="card-title">Profile Details</h5>
 
                                     <div class="row">
                                         <div class="col-lg-3 col-md-4 label ">Full Name</div>
-                                        <div class="col-lg-9 col-md-8">{{ user_data['name']}}</div>
+                                        <div class="col-lg-9 col-md-8">{{ profile_data['name']}}</div>
                                     </div>
 
                                     <div class="row">
@@ -45,21 +44,25 @@
 
                                     <div class="row">
                                         <div class="col-lg-3 col-md-4 label">Address</div>
-                                        <div class="col-lg-9 col-md-8">{{user_data['add']}}</div>
+                                        <div class="col-lg-9 col-md-8">{{profile_data['add']}}</div>
                                     </div>
 
                                     <div class="row">
                                         <div class="col-lg-3 col-md-4 label">Phone</div>
-                                        <div class="col-lg-9 col-md-8">{{user_data['phone']}}</div>
+                                        <div class="col-lg-9 col-md-8">{{profile_data['phone']}}</div>
                                     </div>
 
                                     <div class="row">
                                         <div class="col-lg-3 col-md-4 label">Email</div>
-                                        <div class="col-lg-9 col-md-8">{{user_data['email']}}</div>
+                                        <div class="col-lg-9 col-md-8">{{profile_data['email']}}</div>
                                     </div>
 
                                 </div>
+                                <div class="mt-3">
+                                    <a href="/connection/send/{{profile_data['username']}}"><button type="button" class="btn btn-primary me-3" ><i class="fa-solid fa-plus me-2"></i>Connect</button></a>
 
+                                    <a href="/chat"><button type="button" class="btn btn-outline-primary"><i class="fa-regular fa-comment me-2"></i>Chat</button></a>
+                                </div>
                             </div>
 
                         </div>
