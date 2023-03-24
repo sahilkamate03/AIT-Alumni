@@ -27,15 +27,16 @@ app.config['SQLALCHEMY_DATABASE_URI']= 'sqlite:///site.db'
 
 cred = credentials.Certificate(admin_config)
 firebase_admin.initialize_app(cred)
+pyrebase = pyrebase.initialize_app(firebaseConfig)
+
 
 db = SQLAlchemy(app)
 db_fire = firestore.client()
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
-login_manager.login_view = 'login'
+login_manager.login_view = 'authentication.login'
 login_manager.login_message_category = 'info'
 
-firebase = pyrebase.initialize_app(firebaseConfig)
 
 from ait.views import authentication, chat, connection, error_handling, home, post, profile
 

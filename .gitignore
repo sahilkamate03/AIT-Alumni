@@ -272,6 +272,3 @@ pyrightconfig.json
 
 test/
 requirements1.txt
-
-*.admin_config.json
-*.firebase_config.json
