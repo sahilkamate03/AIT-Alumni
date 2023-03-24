@@ -1,11 +1,14 @@
-import os
-import secrets
 from flask import Blueprint, render_template, abort, url_for, redirect, jsonify, request
 from flask_login import current_user, login_required
-from ait import db_fire
-from datetime import datetime
+from firebase_admin import storage
 
+from ait import db_fire
 from ait.forms import PostForm
+
+import os
+import secrets
+from io import BytesIO
+from datetime import datetime
 
 post =Blueprint('post',__name__)
 
@@ -20,9 +23,17 @@ def save_post_media(form_picture,username):
     random_hex = secrets.token_hex(8)
     _, f_ext = os.path.splitext(form_picture.filename)
     picture_fn = random_hex + f_ext
-    picture_path = os.path.join(post.root_path, f'static\media' , picture_fn)
-    form_picture.save(picture_path)
-    return picture_fn
+    blob = storage.bucket().blob('post/' +username + '/' + picture_fn)
+    file_stream = BytesIO()
+    form_picture.save(file_stream)
+    blob.upload_from_string(
+        file_stream.getvalue(),
+        content_type=form_picture.content_type
+    )
+    blob.make_public()
+    print(blob.public_url)
+
+    return blob.public_url
 
 @post.route('/post/new', methods= ['GET','POST'])
 @login_required
@@ -40,7 +51,7 @@ def new_post():
         "likes" : [],
         "comments" : {},
         "date_created" : datetime.utcnow(),
-        "profile_url" : current_user.profile_url,
+        "profile_url" : user_data['profile_url'],
         "post_id" : current_user.username + datetime.utcnow().strftime(r'%Y%m%d%H%M%S'),
         "role" : current_user.role
         }
@@ -50,7 +61,7 @@ def new_post():
 
         id = current_user.username + data['date_created'].strftime(r'%Y%m%d%H%M%S')
         db_fire.collection('post').document(id).set(data)
-        return redirect(url_for('home.home'))
+        return redirect(url_for('home.home_latest'))
     return render_template('new_post.html', title='New Post',form=form, legend='New Post', user_data = user_data)
 
 @post.route('/comment/<string:post_id>', methods=['POST'])

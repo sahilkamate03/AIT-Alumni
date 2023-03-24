@@ -1,18 +1,29 @@
-import os
-import secrets
 from flask import abort, redirect, render_template, Blueprint, request, url_for
 from flask_login import current_user, login_required
-from ait import db_fire, db
+from firebase_admin import storage
+
+from ait import db_fire
+
+import os
+import secrets
+from io import BytesIO
 
 profile =Blueprint('profile',__name__)
 
-def save_profile(form_picture):
+def save_profile(form_picture,username):
     random_hex = secrets.token_hex(8)
     _, f_ext = os.path.splitext(form_picture.filename)
     picture_fn = random_hex + f_ext
-    picture_path = os.path.join(profile.root_path, f'static\profile_pic' , picture_fn)
-    form_picture.save(picture_path)
-    return picture_fn
+    blob = storage.bucket().blob('profile_pic/'+ username + '/' + picture_fn)
+    file_stream = BytesIO()
+    form_picture.save(file_stream)
+    blob.upload_from_string(
+        file_stream.getvalue(),
+        content_type=form_picture.content_type
+    )
+    blob.make_public()
+    print(blob.public_url)
+    return blob.public_url
 
 @profile.route('/account')
 @login_required
@@ -49,10 +60,10 @@ def edit_account(username):
         
         picture_url = request.files["picture_url"]
         if picture_url.filename:
-            final = save_profile(picture_url)
+            final = save_profile(picture_url, current_user.username)
             current_user.profile_url = final
+            print(final)
             data["profile_url"] = final
-            db.session.commit()
         
         db_fire.collection(current_user.role).document(username).set(data, merge = True)
 

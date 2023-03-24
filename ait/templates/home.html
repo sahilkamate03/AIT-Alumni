@@ -57,10 +57,9 @@
                       {% with profile_url = post.to_dict()['profile_url'] %}
                       {% if profile_url == '' %}
                       <img class="rounded-circle me-2"
-                        src="{{ url_for('static',filename='/profile_pic/default.webp' ) }}" width="40" height="40">
+                        src="{{ url_for('static',filename='/profile_pic/default.jpeg' ) }}" width="40" height="40">
                       {% else %}
-                      <img class="rounded-circle me-2" src="/static/profile_pic/{{post.to_dict()['profile_url']}}"
-                        width="40" height="40">
+                      <img class="rounded-circle me-2" src="{{post.to_dict()['profile_url']}}" width="40" height="40">
                       {% endif %}
                       {% endwith %}
 
@@ -83,12 +82,10 @@
                       <h6 class="card-title">{{post.to_dict()['title']}}</h6>
                       <p class="comment-text">{{post.to_dict()['content']}}</p>
                       {% if post.to_dict()['media'].split('.')[1] != 'mp4' %}
-                      <img src="{{ url_for('static', filename='media/'+post.to_dict()['media'] ) }}" alt=""
-                        class="img-fluid">
+                      <img src="{{post.to_dict()['media']}}" alt="" class="img-fluid">
                       {% else %}
                       <video width="100%" controls>
-                        <source src="{{ url_for('static', filename='media/'+post.to_dict()['media'] ) }}"
-                          type="video/mp4">
+                        <source src="{{post.to_dict()['media']}}" type="video/mp4">
                       </video>
                       {% endif %}
                     </div>
@@ -119,15 +116,16 @@
                   <div class="bg-light p-2">
                     <form action="/comment/{{post.to_dict()['post_id']}}" method="post">
                       <div class="d-flex flex-row align-items-start">
-                        {% with profile_url = current_user.profile_url %}
-                        {% if current_user.profile_url == '' %}
+
+                        {% with profile_url = post.to_dict()['profile_url'] %}
+                        {% if profile_url == '' %}
                         <img class="rounded-circle me-2"
-                          src="{{ url_for('static',filename='/profile_pic/default.webp' ) }}" width="40" height="40">
+                          src="{{ url_for('static',filename='/profile_pic/default.jpeg' ) }}" width="40" height="40">
                         {% else %}
-                        <img class="rounded-circle me-2" src="/static/profile_pic/{{current_user.profile_url}}"
-                          width="40" height="40">
+                        <img class="rounded-circle me-2" src="{{post.to_dict()['profile_url']}}" width="40" height="40">
                         {% endif %}
                         {% endwith %}
+
                         <textarea class="form-control ml-1 shadow-none textarea" name="comment"></textarea>
                       </div>
                       <div class="mt-2 text-right d-flex justify-content-end">

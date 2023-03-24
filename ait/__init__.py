@@ -26,9 +26,10 @@ app.config['SECRET_KEY'] = '5791628bb0b13ce0c676dfde280ba245'
 app.config['SQLALCHEMY_DATABASE_URI']= 'sqlite:///site.db'
 
 cred = credentials.Certificate(admin_config)
-firebase_admin.initialize_app(cred)
+firebase_admin.initialize_app(cred,{
+    'storageBucket':'day-planner-5165f.appspot.com'
+})
 pyrebase = pyrebase.initialize_app(firebaseConfig)
-
 
 db = SQLAlchemy(app)
 db_fire = firestore.client()

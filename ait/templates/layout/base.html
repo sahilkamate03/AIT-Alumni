@@ -75,18 +75,21 @@
                 <li class="nav-item dropdown pe-3">
 
                     <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-                        {% with profile_url = current_user.profile_url %}
-                        {% if current_user.profile_url == '' %}
-                        <img class="rounded-circle" style="aspect-ratio: 1;"
-                            src="{{ url_for('static',filename='/profile_pic/default.webp' ) }}" alt="Profile">
+                        
+                        {% with profile_url = user_data['profile_url'] %}
+                        {% if profile_url == '' %}
+                        <img class="rounded-circle me-2"
+                            src="{{ url_for('static',filename='/profile_pic/default.jpeg' ) }}"
+                            width="40" height="40">
                         {% else %}
-                        {% with profile_add = current_user.profile_url %}
-                        <img class="rounded-circle" style="aspect-ratio: 1;"
-                            src="{{ url_for('static', filename='/profile_pic/'+profile_add ) }}" alt="Profile">
-                        {% endwith %}
+                        <img class="rounded-circle me-2"
+                            src="{{user_data['profile_url']}}"
+                            width="40" height="40">
+                            
                         {% endif %}
                         {% endwith %}
-                        <span class="d-none d-md-block dropdown-toggle ps-2">{{user_data['name']}}</span>
+                        
+                        <span class="d-none d-md-block dropdown-toggle ps-2">{{user_data['name']}}</span> 
                     </a><!-- End Profile Iamge Icon -->
 
                     <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">

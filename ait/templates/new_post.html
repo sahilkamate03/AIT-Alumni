@@ -29,15 +29,14 @@
                                 <div class="d-flex flex-column comment-section">
                                     <div class="bg-light p-2">
                                         <div class="d-flex flex-row align-items-start">
-                                            {% with profile_url = current_user.profile_url %}
+                                            {% with profile_url = user_data['profile_url'] %}
                                             {% if profile_url == '' %}
-                                            <img class="rounded-circle me-2 mt-2"
-                                                src="{{ url_for('static',filename='/profile_pic/default.webp' ) }}"
-                                                width="40" height="40">
+                                            <img class="rounded-circle me-2" style="aspect-ratio: 1;"
+                                                src="{{ url_for('static',filename='/profile_pic/default.jpeg' ) }}" height="40" width="40">
                                             {% else %}
-                                            <img class="rounded-circle me-2 mt-2"
-                                                src="/static/profile_pic/{{current_user['profile_url']}}" width="40"
-                                                height="40">
+                                            <img class="rounded-circle me-2" style="aspect-ratio: 1;"
+                                                src="{{user_data['profile_url']}}" height="40" width="40">
+
                                             {% endif %}
                                             {% endwith %}
 

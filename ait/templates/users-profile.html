@@ -19,17 +19,18 @@
 
         <div class="card">
           <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
-            {% with profile_url = current_user.profile_url %}
-            {% if current_user.profile_url == '' %}
-            <img class="rounded-circle" style="aspect-ratio: 1;"
-              src="{{ url_for('static',filename='/profile_pic/default.webp' ) }}" alt="Profile">
+
+            {% with profile_url = user_data['profile_url'] %}
+            {% if profile_url == '' %}
+            <img class="rounded-circle me-2" style="aspect-ratio: 1;"
+              src="{{ url_for('static',filename='/profile_pic/default.jpeg' ) }}">
             {% else %}
-            {% with profile_add = current_user.profile_url %}
-            <img class="rounded-circle" style="aspect-ratio: 1;"
-              src="{{ url_for('static', filename='/profile_pic/'+profile_add ) }}" alt="Profile">
-            {% endwith %}
+            <img class="rounded-circle me-2" style="aspect-ratio: 1;" src="{{user_data['profile_url']}}">
+
             {% endif %}
             {% endwith %}
+
+
             <h2>{{ user_data['name']}}</h2>
             <h3>{{current_user.role}}</h3>
             <div class="social-links mt-2">
@@ -119,15 +120,7 @@
                     <label for="profileImage" class="col-md-4 col-lg-3 col-form-label">Profile Image</label>
                     <div class="col-md-8 col-lg-9">
 
-                      {% with profile_url = current_user.profile_url %}
-                      {% if current_user.profile_url == '' %}
                       <img src="{{ url_for('static',filename='/profile_pic/default.webp' ) }}" alt="Profile">
-                      {% else %}
-                      {% with profile_add = current_user.profile_url %}
-                      <img src="{{ url_for('static', filename='/profile_pic/'+profile_add ) }}" alt="Profile">
-                      {% endwith %}
-                      {% endif %}
-                      {% endwith %}
 
                       <div class="pt-2">
                         <!-- <a href="#" class="btn btn-primary btn-sm" title="Upload new profile image"><i
