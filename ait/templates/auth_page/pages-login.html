@@ -27,25 +27,6 @@
                 <form class="row g-3 needs-validation" method="POST" action="">
                   {{ form.hidden_tag() }}
                   <fieldset class="form-group">
-
-                    <div class="col-12 mt-3">
-                      <div class="form-group d-flex justify-content-flex-start mt-2 mb-2">
-                        {{ form.role.label(class="form-label pe-5") }}
-                        {% if form.role.errors %}
-                        <div class="invalid-feedback">
-                          {% for error in form.role.errors %}
-                          <span>{{ error }}</span>
-                          {% endfor %}
-                        </div>
-                        {% else %}
-                        <div class="form-check-inline">
-                          {{ form.role(class=" form-check form-check-inline ", type="radio", style="list-style-type:
-                          none;") }}
-                        </div>
-                        {% endif %}
-                      </div>
-                    </div>
-
                     <div class="col-12">
                       <div class="form-group">
                         {{ form.email.label(class="form-label") }}

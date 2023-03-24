@@ -3,10 +3,22 @@ from flask_login import UserMixin
 
 from firebase_admin import auth
 
+from datetime import date
+
+def roleProvider(email):
+    year =int('20' + email.split('@')[0].split('_')[1][0:2])
+    currYear = int(date.today().year)
+
+    if (year<currYear-4) :
+        return 'Alumini'
+    else :
+        return 'Student'
+
+
 @login_manager.user_loader
-def load_user(user_id):
-    user = auth.get_user(user_id)
-    return User(user.uid)
+def load_user(uid):
+    user = auth.get_user(uid)
+    return User(uid, user.email)
 
 # class User(db.Model, UserMixin):
 #     id = db.Column(db.Integer, primary_key=True)
@@ -21,27 +33,23 @@ def load_user(user_id):
 
 # from flask_login import UserMixin
 # from firebase_admin import auth
-
-
 class User(UserMixin):
-    def __init__(self, uid):
+    def __init__(self, uid, email):
         self.uid = uid
-        self._user = None
+        self._email = email
+        self.username = email.split('@')[0]
+        self.role = roleProvider(email)
     
     def get_id(self):
-        return self.uid
-    
-    @staticmethod
-    def get(user_id):
-        user = User(user_id)
-        user._user = auth.get_user(user_id)
-        if not user._user:
-            return None
-        return user
+        return str(self.uid)
 
     @property
     def email(self):
-        return self._user.email if self._user else None
+        return self._email
+
+    @email.setter
+    def email(self, value):
+        self._email = value
 
     @property
     def is_active(self):

@@ -13,14 +13,17 @@ class RegistrationForm(FlaskForm):
                         validators=[DataRequired(), Length(min=2, max=50)])
     email = StringField('Email',
                         validators=[DataRequired(), Email()])
-    role = RadioField('Role',choices=[('Student'),('Alumini')], validators=[InputRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     confirm_password = PasswordField('Confirm Password',
                                 validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Create Account')
 
     def validate_email(self, email):
-        user = User.query.filter_by(email=email.data).first()
+        try:
+            user = auth.get_user_by_email(email.data)
+        except Exception as e:
+            user = False
+        
         if user:
             raise ValidationError('That email is taken. Please choose a different one.')
 
@@ -28,6 +31,7 @@ class RegistrationForm(FlaskForm):
             ait = email.data.split('@')[1]
         else: 
             raise ValidationError('Enter valid email.')
+        
         if ait != 'aitpune.edu.in':
             raise ValidationError('Only @aitpune.edu.in email address allowed.')
 
@@ -36,7 +40,6 @@ class LoginForm(FlaskForm):
     email = StringField('Email',
                         validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
-    role = RadioField('Role',choices=[('Student'),('Alumini')], validators=[InputRequired()])
     remember = BooleanField('Remember Me')
     submit = SubmitField('Login')
 

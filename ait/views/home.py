@@ -9,9 +9,12 @@ home =Blueprint('home',__name__)
 @home.route('/home/latest')
 @login_required
 def home_latest():
-    user_data = db_fire.collection(current_user.role).document(current_user.username).get().to_dict()
-    posts = db_fire.collection('post').order_by("date_created", direction=firestore.Query.DESCENDING).get()
-    return render_template('home.html', title = 'Home', user_data = user_data, posts = posts)
+    print(current_user.role)
+    print(current_user.email)
+    print(current_user.uid)
+    # user_data = db_fire.collection(current_user.role).document(current_user.username).get().to_dict()
+    # posts = db_fire.collection('post').order_by("date_created", direction=firestore.Query.DESCENDING).get()
+    return render_template('test.html', title = 'Home')
 
 @home.route('/home/top')
 @login_required
