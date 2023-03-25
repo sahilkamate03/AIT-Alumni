@@ -5,8 +5,10 @@ from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextA
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, InputRequired
 from firebase_admin import auth
 
+from ait import db_fire
 from ait.models import User
 
+from datetime import date
 
 class RegistrationForm(FlaskForm):
     name = StringField('Name',
@@ -41,7 +43,10 @@ class LoginForm(FlaskForm):
                         validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
     remember = BooleanField('Remember Me')
+
     submit = SubmitField('Login')
+
+
 
 
 class UpdateAccountForm(FlaskForm):

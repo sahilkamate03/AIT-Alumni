@@ -73,9 +73,6 @@ def edit_account(username):
             data["profile_url"] = final
         
         db_fire.collection(current_user.role).document(username).set(data, merge = True)
-       
-
-
 
     return redirect(url_for('profile.account'))
 

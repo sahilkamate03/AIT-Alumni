@@ -1,3 +1,4 @@
+from dotenv import load_dotenv
 from flask import Blueprint, render_template, url_for, redirect, request, flash
 from flask_login import current_user, login_user, logout_user
 from firebase_admin import auth
@@ -8,8 +9,13 @@ from ait.models import User
 from ait import db, bcrypt, db_fire, pyrebase
 from ait.forms import LoginForm, RegistrationForm
 
+import os
 from datetime import date
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
+load_dotenv()
 authentication =Blueprint('authentication',__name__)
 pyrebase_auth = pyrebase.auth()
 
@@ -21,6 +27,46 @@ def roleProvider(email):
         return 'Alumini'
     else :
         return 'Student'
+
+
+def send_verification_email(email):
+    sender = 'sahilkamate03@gmail.com'
+    verification_link =auth.generate_email_verification_link(email)
+    recipient = email
+    subject = 'Verify your email for AIT-Website'
+
+    body = f'''
+    Hello {email.split('@')[0]},
+
+    Follow this link to verify your email address.
+
+    {verification_link}
+
+    If you didn’t ask to verify this address, you can ignore this email.
+
+    Thanks
+    '''
+
+    message = MIMEMultipart()
+    message['From'] = sender
+    message['To'] = recipient
+    message['Subject'] = subject
+    message.attach(MIMEText(body, 'plain'))
+
+    smtp_server = 'smtp.gmail.com'
+    smtp_port = 587
+    smtp_username = os.getenv('EMAIL')
+    smtp_password = os.getenv('EMAIL_PWD')
+
+    print(smtp_password, smtp_username)
+
+    with smtplib.SMTP(smtp_server, smtp_port) as smtp:
+        smtp.ehlo()
+        smtp.starttls()
+        smtp.ehlo()
+        smtp.login(smtp_username, smtp_password)
+        smtp.sendmail(sender, recipient, message.as_string())
+
 
 @authentication.route('/login', methods= ['GET', 'POST'])
 def login():
@@ -35,6 +81,10 @@ def login():
         except:
             return redirect(url_for('authentication.register'))
         
+        print(user_id.email_verified)
+        if not(user_id.email_verified):
+            return render_template('./auth_page/pages-login.html', title = 'Login', form=form)
+            
         try:
             info= pyrebase_auth.sign_in_with_email_and_password(email, password)
             user_id =info['localId']
@@ -53,7 +103,7 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('authentication.login'))
-    
+
 @authentication.route('/register',methods = ['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
@@ -63,7 +113,6 @@ def register():
         print('success')
         email =form.email.data
         password =form.password.data
-        user =auth.create_user(email =email, password =password)
         role =roleProvider(email)
         data= {"name": form.name.data, 
         "username": email.split("@")[0],
@@ -72,9 +121,15 @@ def register():
         "add" : "-",
         "phone" : "-",
         "about" : "Write about yourself.",
-        "profile_url" : ""
+        "profile_url" : "",
+        "verified" : False
         }
-        
+        try:
+            auth.create_user(email =email, password =password)
+            send_verification_email(email)
+            db_fire.collection(role).document(form.email.data.split("@")[0]).set(data)
+        except Exception as e:
+            print(e)
         return redirect(url_for('authentication.login'))
         
     return render_template('./auth_page/pages-register.html', title = 'Register', form =form)

@@ -72,14 +72,16 @@
                             </div>
 
                             <div class="card-footer text-muted d-flex justify-content-start align-items-center p-3">
-                                {% if current_user.profile_url == '' %}
-                                <img class="rounded-circle me-2"
-                                    src="{{ url_for('static',filename='/profile_pic/default.webp' ) }}" width="40"
-                                    height="40">
+                                {% with profile_url = user_data['profile_url'] %}
+                                {% if profile_url == '' %}
+                                <img class="rounded-circle me-2" style="aspect-ratio: 1;"
+                                    src="{{ url_for('static',filename='/profile_pic/default.jpeg' ) }}">
                                 {% else %}
-                                <img class="rounded-circle me-2" src="/static/profile_pic/{{current_user.profile_url}}"
-                                    width="40" height="40">
+                                <img class="rounded-circle me-2" style="aspect-ratio: 1;"
+                                    src="{{user_data['profile_url']}}">
+
                                 {% endif %}
+                                {% endwith %}
                                 <input type="text" class="form-control form-control-lg" id="messageInput"
                                     placeholder="Type message">
                                 <!-- <a class="ms-1 text-muted" href="#!"><i
