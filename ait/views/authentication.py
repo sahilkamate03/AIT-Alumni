@@ -6,8 +6,8 @@ import pyrebase
 
 from ait import db_fire
 from ait.models import User
-from ait import db, bcrypt, db_fire, pyrebase
-from ait.forms import LoginForm, RegistrationForm
+from ait import db_fire, pyrebase
+from ait.forms import LoginForm, RegistrationForm, PasswordRestForm
 
 import os
 from datetime import date
@@ -30,7 +30,7 @@ def roleProvider(email):
 
 
 def send_verification_email(email):
-    sender = 'sahilkamate03@gmail.com'
+    sender = os.getenv('EMAIL')
     verification_link =auth.generate_email_verification_link(email)
     recipient = email
     subject = 'Verify your email for AIT-Website'
@@ -43,6 +43,44 @@ def send_verification_email(email):
     {verification_link}
 
     If you didn’t ask to verify this address, you can ignore this email.
+
+    Thanks
+    '''
+
+    message = MIMEMultipart()
+    message['From'] = sender
+    message['To'] = recipient
+    message['Subject'] = subject
+    message.attach(MIMEText(body, 'plain'))
+
+    smtp_server = 'smtp.gmail.com'
+    smtp_port = 587
+    smtp_username = os.getenv('EMAIL')
+    smtp_password = os.getenv('EMAIL_PWD')
+
+    print(smtp_password, smtp_username)
+
+    with smtplib.SMTP(smtp_server, smtp_port) as smtp:
+        smtp.ehlo()
+        smtp.starttls()
+        smtp.ehlo()
+        smtp.login(smtp_username, smtp_password)
+        smtp.sendmail(sender, recipient, message.as_string())
+
+def reset_password(email):
+    sender = os.getenv('EMAIL')
+    reset_link =auth.generate_password_reset_link(email)
+    recipient = email
+    subject = 'Reset your password for AIT-Website'
+
+    body = f'''
+    Hello {email.split('@')[0]},
+
+    Follow this link to reset your email address.
+
+    {reset_link}
+
+    If you didn’t ask to reset this address, you can ignore this email.
 
     Thanks
     '''
@@ -133,3 +171,23 @@ def register():
         return redirect(url_for('authentication.login'))
         
     return render_template('./auth_page/pages-register.html', title = 'Register', form =form)
+
+@authentication.route('/password_reset', methods= ['GET', 'POST'])
+def password_reset():
+    form = PasswordRestForm()
+    if form.validate_on_submit():
+        email =form.email.data
+        try:
+            auth.get_user_by_email(email)
+        except:
+            return redirect(url_for('authentication.register'))
+        
+        try:
+            reset_password(email)
+            return redirect(url_for('home.login'))
+        except Exception as e: 
+            flash('Login Unsuccessful. Please check email and password', 'danger')
+            print(e)
+            return redirect(url_for('authentication.login'))
+        
+    return render_template('./auth_page/pwd_reset.html', title = 'Password Reset', form=form)

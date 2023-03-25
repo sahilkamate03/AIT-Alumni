@@ -1,7 +1,5 @@
 from flask import Flask, send_from_directory
-from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
-from flask_sqlalchemy import SQLAlchemy
 from flask_socketio import SocketIO, send
 import firebase_admin
 
@@ -31,9 +29,7 @@ firebase_admin.initialize_app(cred,{
 })
 pyrebase = pyrebase.initialize_app(firebaseConfig)
 
-db = SQLAlchemy(app)
 db_fire = firestore.client()
-bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'authentication.login'
 login_manager.login_message_category = 'info'

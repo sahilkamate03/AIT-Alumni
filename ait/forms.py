@@ -9,7 +9,6 @@ from ait import db_fire
 from ait.models import User
 
 from datetime import date
-
 class RegistrationForm(FlaskForm):
     name = StringField('Name',
                         validators=[DataRequired(), Length(min=2, max=50)])
@@ -36,8 +35,6 @@ class RegistrationForm(FlaskForm):
         
         if ait != 'aitpune.edu.in':
             raise ValidationError('Only @aitpune.edu.in email address allowed.')
-
-
 class LoginForm(FlaskForm):
     email = StringField('Email',
                         validators=[DataRequired(), Email()])
@@ -45,10 +42,10 @@ class LoginForm(FlaskForm):
     remember = BooleanField('Remember Me')
 
     submit = SubmitField('Login')
-
-
-
-
+class PasswordRestForm(FlaskForm):
+    email = StringField('Email',
+                        validators=[DataRequired(), Email()])
+    submit = SubmitField('Reset')
 class UpdateAccountForm(FlaskForm):
     name = StringField('Username')
     about = StringField('About')
@@ -72,8 +69,6 @@ class UpdateAccountForm(FlaskForm):
             user = User.query.filter_by(email=email.data).first()
             if user:
                 raise ValidationError('That email is taken. Please choose a different one.')
-
-
 class PostForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])
     content = TextAreaField('Content', validators=[DataRequired()])
