@@ -26,7 +26,6 @@ def send_req(username):
         user_data = db_fire.collection('Alumini').document(username).get().to_dict()
         data = db_fire.collection('connection').document(current_user.username).get()
         
-        print(data.exists)
         if data.exists:
             print(data.to_dict())
             temp = data.to_dict()
@@ -54,10 +53,7 @@ def send_req(username):
                 }
             doc_ref.set(temp, merge = True)
                 
-
-        user = User.query.filter_by(username=username).first()
-        role = user.role
-
+        role = 'Alumini'
         return redirect(url_for('profile.user',username = username, role = role))
 
 @connect.route('/connection/remove/<string:username>')
@@ -67,11 +63,12 @@ def remove_req(username):
         abort(403)
     else:
         data_user = db_fire.collection('connection').document(current_user.username).get().to_dict()
-        data_user.pop(username,None)
-        db_fire.collection('connection').document(current_user.username).set( data_user ,merge = True)
-        user = User.query.filter_by(username=username).first()
-        role = user.role
-
+        print(data_user)
+        print(type(data_user))
+        del data_user[username]
+        print(data_user)
+        db_fire.collection('connection').document(current_user.username).set( data_user)
+        role = 'Alumini'
         return redirect(url_for('profile.user',username = username, role = role))
 
 @connect.route('/connection/<string:type>/<string:username>')

@@ -42,14 +42,13 @@
                                     <div class="bg-white p-2 ">
 
                                         <div class="d-flex flex-row user-info  ">
+                                            
                                             {% with profile_url = t['profile_url'] %}
                                             {% if profile_url == '' %}
                                             <img class="rounded-circle me-2"
-                                                src="{{ url_for('static',filename='/profile_pic/default.webp' ) }}"
-                                                width="40" height="40">
+                                              src="{{ url_for('static',filename='/profile_pic/default.jpeg' ) }}" width="40" height="40">
                                             {% else %}
-                                            <img class="rounded-circle me-2"
-                                                src="/static/profile_pic/{{t['profile_url']}}" width="40" height="40">
+                                            <img class="rounded-circle me-2" src="{{t['profile_url']}}" width="40" height="40">
                                             {% endif %}
                                             {% endwith %}
 

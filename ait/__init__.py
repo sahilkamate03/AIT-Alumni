@@ -1,9 +1,9 @@
-from flask import Flask
+from flask import Flask, send_from_directory
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
-import firebase_admin
 from flask_socketio import SocketIO, send
+import firebase_admin
 
 from firebase_admin import credentials
 from firebase_admin import firestore

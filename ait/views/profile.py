@@ -62,10 +62,20 @@ def edit_account(username):
         if picture_url.filename:
             final = save_profile(picture_url, current_user.username)
             current_user.profile_url = final
-            print(final)
+            batch = db_fire.batch()
+            docs = db_fire.collection('post').where('username', '==', current_user.username).get()
+
+            for doc in docs:
+                doc_ref = db_fire.collection('post').document(doc.id)
+                doc_ref.update({'profile_url': final})
+            batch.commit()
+            
             data["profile_url"] = final
         
         db_fire.collection(current_user.role).document(username).set(data, merge = True)
+       
+
+
 
     return redirect(url_for('profile.account'))
 
