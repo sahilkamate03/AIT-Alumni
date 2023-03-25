@@ -44,6 +44,7 @@
 
           <!-- View Post-->
           {% for post in posts %}
+          {%set post =post.to_dict() %}
           <div class="col-12">
             <div class="card">
 
@@ -54,59 +55,67 @@
                   <div class="bg-white p-2">
 
                     <div class="d-flex flex-row user-info ">
-                      {% with profile_url = post.to_dict()['profile_url'] %}
+                      {% with profile_url = post['profile_url'] %}
                       {% if profile_url == '' %}
                       <img class="rounded-circle me-2"
                         src="{{ url_for('static',filename='/profile_pic/default.jpeg' ) }}" width="40" height="40">
                       {% else %}
-                      <img class="rounded-circle me-2" src="{{post.to_dict()['profile_url']}}" width="40" height="40">
+                      <img class="rounded-circle me-2" src="{{post['profile_url']}}" width="40" height="40">
                       {% endif %}
                       {% endwith %}
 
                       <div class="d-flex flex-column justify-content-start ml-2 ">
-                        {% if post.to_dict()['role'] == 'Student' %}
-                        <a href="/user/Student/{{post.to_dict()['username']}}"><span
-                            class="d-block font-weight-bold name">{{post.to_dict()['username']}}</span>
+                        {% if post['role'] == 'Student' %}
+                        <a href="/user/Student/{{post['username']}}"><span
+                            class="d-block font-weight-bold name">{{post['username']}}</span>
                         </a>
                         {% endif %}
-                        {% if post.to_dict()['role'] == 'Alumini' %}
-                        <a href="/user/Alumini/{{post.to_dict()['username']}}"><span
-                            class="d-block font-weight-bold name">{{post.to_dict()['username']}}</span>
+                        {% if post['role'] == 'Alumini' %}
+                        <a href="/user/Alumini/{{post['username']}}"><span
+                            class="d-block font-weight-bold name">{{post['username']}}</span>
                         </a>
                         {% endif %}
                         <span class="date text-black-50">Shared publicly -
-                          {{post.to_dict()['date_created'].strftime('%d/%m/%Y')}}</span>
+                          {{post['date_created'].strftime('%d/%m/%Y')}}</span>
                       </div>
                     </div>
                     <div class="mt-2">
-                      <h6 class="card-title">{{post.to_dict()['title']}}</h6>
-                      <p class="comment-text">{{post.to_dict()['content']}}</p>
-                      {% if post.to_dict()['media'].split('.')[1] != 'mp4' %}
-                      <img src="{{post.to_dict()['media']}}" alt="" class="img-fluid">
+                      <h6 class="card-title">{{post['title']}}</h6>
+                      <p class="comment-text">{{post['content']}}</p>
+                      {% if post['media'].split('.')[1] != 'mp4' %}
+                      <img src="{{post['media']}}" alt="" class="img-fluid">
                       {% else %}
                       <video width="100%" controls>
-                        <source src="{{post.to_dict()['media']}}" type="video/mp4">
+                        <source src="{{post['media']}}" type="video/mp4">
                       </video>
                       {% endif %}
                     </div>
                   </div>
                   <div class="bg-white">
                     <div class="d-flex flex-row fs-12">
-                      <form action="/like/{{post.to_dict()['post_id']}}" method="post">
+                      <form action="/like/{{post['post_id']}}" method="post">
                         <div class="like p-2 cursor"><i class="fa fa-thumbs-o-up"></i>
                           <span class="">
-                            <button class=" btn-outline-primary btn-sm btn shadow-none"
-                              type="submit">Like({{post.to_dict()['likes']|length}})
+                            {% if current_user.username in post['likes'] %}
+                            <button class=" btn-primary btn-sm btn shadow-none"
+                              type="submit">Like({{post['likes']|length}})
+                              
                             </button>
+                            {% else %}
+                            <button class=" btn-outline-primary btn-sm btn shadow-none"
+                              type="submit">Like({{post['likes']|length}})
+                            </button>
+                            {% endif %}
+
                           </span>
                         </div>
 
                       </form>
                       <div class="like p-2 cursor"><i class="fa fa-commenting-o"></i><span class="ml-1"><a class=""
-                            data-bs-toggle="collapse" href="#{{post.to_dict()['post_id']}}" role="button"
+                            data-bs-toggle="collapse" href="#{{post['post_id']}}" role="button"
                             aria-expanded="false">
                             <button class=" btn-outline-primary btn-sm btn shadow-none">
-                              Comment({{post.to_dict()['comments']|length}})</button>
+                              Comment({{post['comments']|length}})</button>
                           </a></span>
                       </div>
                       <!-- <div class="like p-2 cursor"><i class="fa fa-share"></i><span class="ml-1">Share</span>
@@ -114,15 +123,15 @@
                     </div>
                   </div>
                   <div class="bg-light p-2">
-                    <form action="/comment/{{post.to_dict()['post_id']}}" method="post">
+                    <form action="/comment/{{post['post_id']}}" method="post">
                       <div class="d-flex flex-row align-items-start">
 
-                        {% with profile_url = post.to_dict()['profile_url'] %}
+                        {% with profile_url = post['profile_url'] %}
                         {% if profile_url == '' %}
                         <img class="rounded-circle me-2"
                           src="{{ url_for('static',filename='/profile_pic/default.jpeg' ) }}" width="40" height="40">
                         {% else %}
-                        <img class="rounded-circle me-2" src="{{post.to_dict()['profile_url']}}" width="40" height="40">
+                        <img class="rounded-circle me-2" src="{{post['profile_url']}}" width="40" height="40">
                         {% endif %}
                         {% endwith %}
 
@@ -138,11 +147,11 @@
                 </div>
 
                 <!-- comment box starts -->
-                <div class="collapse" id="{{post.to_dict()['post_id']}}">
+                <div class="collapse" id="{{post['post_id']}}">
                   <div class="card card-body mt-3 ">
                     <div class="card-body mt-3">
-                      {% if post.to_dict()['comments'] %}
-                      {% with comments= post.to_dict()['comments'] %}
+                      {% if post['comments'] %}
+                      {% with comments= post['comments'] %}
                       {% for key,comment in comments.items() %}
                       <!-- comment content box start -->
                       <div class="d-flex flex-row user-info ">

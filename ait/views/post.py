@@ -72,16 +72,18 @@ def add_comment(post_id):
         date_created = datetime.utcnow()
         comment = request.form.get("comment")
         id = username + date_created.strftime(r'%Y%m%d%H%M%S')
+        user_data = db_fire.collection(current_user.role).document(current_user.username).get().to_dict()
+
         data = {
             id :{
             "date_created" : date_created,
             "comment" : comment,
             "username" : current_user.username,
-            "profile_url" : current_user.profile_url
+            "profile_url" : user_data['profile_url']
             }
         }
         db_fire.collection('post').document(post_id).set({"comments": data}, merge = True)
-        return redirect(url_for('home.home'))
+        return redirect(url_for('home.home_latest'))
 
 @post.route('/like/<string:post_id>', methods=['POST'])
 @login_required
@@ -94,7 +96,7 @@ def like(post_id):
                 db_fire.collection('post').document(post_id).set({'likes': temp}, merge =True)
 
             else:
-                result['likes'].postend(current_user.username)
+                result['likes'].append(current_user.username)
                 db_fire.collection('post').document(post_id).set(result, merge = True)
 
-        return redirect(url_for('home.home'))
+        return redirect(url_for('home.home_latest'))
