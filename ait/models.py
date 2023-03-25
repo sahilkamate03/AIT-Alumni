@@ -19,20 +19,6 @@ def roleProvider(email):
 def load_user(uid):
     user = auth.get_user(uid)
     return User(uid, user.email)
-
-# class User(db.Model, UserMixin):
-#     id = db.Column(db.Integer, primary_key=True)
-#     username = db.Column(db.String(50), unique=True, nullable=False)
-#     email = db.Column(db.String(120), unique=True, nullable=False)
-#     profile_url = db.Column(db.String(500), nullable=False, default='')
-#     role = db.Column(db.String(10), unique=False, nullable=False)
-#     password = db.Column(db.String(60), nullable=False)
-
-#     def __repr__(self):
-#         return f"User('{self.username}', '{self.email}', '{self.image_file}')"
-
-# from flask_login import UserMixin
-# from firebase_admin import auth
 class User(UserMixin):
     def __init__(self, uid, email):
         self.uid = uid

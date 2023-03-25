@@ -99,7 +99,7 @@
                             {% if current_user.username in post['likes'] %}
                             <button class=" btn-primary btn-sm btn shadow-none"
                               type="submit">Like({{post['likes']|length}})
-                              
+
                             </button>
                             {% else %}
                             <button class=" btn-outline-primary btn-sm btn shadow-none"
@@ -112,8 +112,7 @@
 
                       </form>
                       <div class="like p-2 cursor"><i class="fa fa-commenting-o"></i><span class="ml-1"><a class=""
-                            data-bs-toggle="collapse" href="#{{post['post_id']}}" role="button"
-                            aria-expanded="false">
+                            data-bs-toggle="collapse" href="#{{post['post_id']}}" role="button" aria-expanded="false">
                             <button class=" btn-outline-primary btn-sm btn shadow-none">
                               Comment({{post['comments']|length}})</button>
                           </a></span>
@@ -126,12 +125,12 @@
                     <form action="/comment/{{post['post_id']}}" method="post">
                       <div class="d-flex flex-row align-items-start">
 
-                        {% with profile_url = post['profile_url'] %}
+                        {% with profile_url = user_data['profile_url'] %}
                         {% if profile_url == '' %}
                         <img class="rounded-circle me-2"
                           src="{{ url_for('static',filename='/profile_pic/default.jpeg' ) }}" width="40" height="40">
                         {% else %}
-                        <img class="rounded-circle me-2" src="{{post['profile_url']}}" width="40" height="40">
+                        <img class="rounded-circle me-2" src="{{user_data['profile_url']}}" width="40" height="40">
                         {% endif %}
                         {% endwith %}
 
@@ -147,31 +146,40 @@
                 </div>
 
                 <!-- comment box starts -->
+
                 <div class="collapse" id="{{post['post_id']}}">
                   <div class="card card-body mt-3 ">
                     <div class="card-body mt-3">
                       {% if post['comments'] %}
                       {% with comments= post['comments'] %}
                       {% for key,comment in comments.items() %}
-                      <!-- comment content box start -->
-                      <div class="d-flex flex-row user-info ">
+                      <div class="d-flex flex-start mt-4">
+                        <!-- {% with profile_url = comment['profile_url'] %}
+                        {% if profile_url == '' %}
+                        <img class="rounded-circle me-2"
+                          src="{{ url_for('static',filename='/profile_pic/default.jpeg' ) }}" width="40" height="40">
+                        {% else %}
+                        <img class="rounded-circle me-2" src="{{comment['profile_url']}}" width="40" height="40">
+                        {% endif %}
+                        {% endwith %} -->
+                        <i class="fa-solid fa-comments me-2 mt-1 "></i>
+                        <div class="flex-grow-1 flex-shrink-1">
+                          <div>
+                            <div class="d-flex justify-content-between align-items-center">
+                              <p class="mb-1">
+                                {{comment['username']}}<span class="small">-
+                                  {{comment['date_created'].strftime('%d/%m/%Y')}}</span>
+                              </p>
 
-                        <div class="d-flex flex-row justify-content-start ml-2 ">
-                          <p style=" color:rgb(28, 176, 250);">
-                            {{comment['username']}} </p><span class="d-block font-weight-bold name">
-                          </span><span class="date text-black-50">" commented -
-                            {{comment['date_created'].strftime('%d/%m/%Y')}}
-                          </span>
+                            </div>
+                            <p class="small mb-0">
+                              {{comment['comment']}}
+                          </div>
                         </div>
                       </div>
-                      <div class="mt-2">
-                        <p class="comment-text ">
-                          {{comment['comment']}}
-                        </p>
-                      </div>
-                      <!-- comment content box ends -->
                       {% endfor %}
                       {% endwith %}
+
 
                       {% else %}
                       <div class="mt-2">

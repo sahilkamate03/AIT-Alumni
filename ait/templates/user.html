@@ -39,7 +39,7 @@
 
                                     <div class="row">
                                         <div class="col-lg-3 col-md-4 label">Role</div>
-                                        <div class="col-lg-9 col-md-8">{{current_user.role}}</div>
+                                        <div class="col-lg-9 col-md-8">{{profile_data['role']}}</div>
                                     </div>
 
                                     <div class="row">
@@ -75,9 +75,12 @@
                                     </a>
 
                                     {% endif %}
-
-                                    <a href="/chat"><button type="button" class="btn btn-outline-primary"><i
-                                                class="fa-regular fa-comment me-2"></i>Chat</button></a>
+                                    {% if profile_data['phone'] != '' %}
+                                    <a href="https://wa.me/+91{{profile_data['phone']}}">
+                                        <button type="button" class="btn btn-outline-primary"><i
+                                                class="fa-regular fa-comment me-2"></i>Chat</button>
+                                    </a>
+                                    {% endif %}
                                 </div>
                             </div>
 

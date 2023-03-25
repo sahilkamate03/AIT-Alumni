@@ -69,7 +69,7 @@ def edit_account(username):
                 doc_ref = db_fire.collection('post').document(doc.id)
                 doc_ref.update({'profile_url': final})
             batch.commit()
-            
+
             data["profile_url"] = final
         
         db_fire.collection(current_user.role).document(username).set(data, merge = True)
