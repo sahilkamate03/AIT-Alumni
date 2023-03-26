@@ -270,5 +270,9 @@ pyrightconfig.json
 
 # End of https://www.toptal.com/developers/gitignore/api/firebase,flask,python
 
+# ait/
+ait/config
 test/
-requirements1.txt
+ait/configs/admin_config.json
+ait/configs/firebase_config.json
+# requirements1.txt

@@ -11,22 +11,20 @@ import os
 import json
 from datetime import datetime
 
-with open(os.path.join(os.path.dirname(__file__), 'config/admin_config.json')) as f:
+with open(os.path.join(os.path.dirname(__file__), 'configs/admin_config.json')) as f:
     admin_config = json.load(f)
 
-with open(os.path.join(os.path.dirname(__file__), 'config/firebase_config.json')) as f:
+with open(os.path.join(os.path.dirname(__file__), 'configs/firebase_config.json')) as f:
     firebaseConfig =  json.load(f)
 
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-app.config['SECRET_KEY'] = '5791628bb0b13ce0c676dfde280ba245'
-app.config['SQLALCHEMY_DATABASE_URI']= 'sqlite:///site.db'
-
 cred = credentials.Certificate(admin_config)
 firebase_admin.initialize_app(cred,{
     'storageBucket':'day-planner-5165f.appspot.com'
 })
+
 pyrebase = pyrebase.initialize_app(firebaseConfig)
 
 db_fire = firestore.client()
