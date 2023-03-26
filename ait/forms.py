@@ -33,19 +33,67 @@ class RegistrationForm(FlaskForm):
         else: 
             raise ValidationError('Enter valid email.')
         
+        if '_' not in email.data.split('@')[0] or len(email.data.split('@')[0].split('_')[1])!=5:
+            raise ValidationError('Enter valid email.')
+
         if ait != 'aitpune.edu.in':
             raise ValidationError('Only @aitpune.edu.in email address allowed.')
+        
+        
 class LoginForm(FlaskForm):
     email = StringField('Email',
                         validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
     remember = BooleanField('Remember Me')
+    
+    def validate_email(self, email):
+        if '@' in email.data:
+            ait = email.data.split('@')[1]
+        else: 
+            raise ValidationError('Enter valid email.')
+        
+        if '_' not in email.data.split('@')[0] or len(email.data.split('@')[0].split('_')[1])!=5:
+            raise ValidationError('Enter valid email.')
 
+        if ait != 'aitpune.edu.in':
+            raise ValidationError('Only @aitpune.edu.in email address allowed.')
+        
     submit = SubmitField('Login')
 class PasswordRestForm(FlaskForm):
     email = StringField('Email',
                         validators=[DataRequired(), Email()])
+    
+    def validate_email(self, email):
+        if '@' in email.data:
+            ait = email.data.split('@')[1]
+        else: 
+            raise ValidationError('Enter valid email.')
+        
+        if '_' not in email.data.split('@')[0] or len(email.data.split('@')[0].split('_')[1])!=5:
+            raise ValidationError('Enter valid email.')
+
+        if ait != 'aitpune.edu.in':
+            raise ValidationError('Only @aitpune.edu.in email address allowed.')
+    
     submit = SubmitField('Reset')
+    
+class EmailVerificationForm(FlaskForm):
+    email = StringField('Email',
+                        validators=[DataRequired(), Email()])
+    
+    def validate_email(self, email):
+        if '@' in email.data:
+            ait = email.data.split('@')[1]
+        else: 
+            raise ValidationError('Enter valid email.')
+        
+        if '_' not in email.data.split('@')[0] or len(email.data.split('@')[0].split('_')[1])!=5:
+            raise ValidationError('Enter valid email.')
+
+        if ait != 'aitpune.edu.in':
+            raise ValidationError('Only @aitpune.edu.in email address allowed.')
+        
+    submit = SubmitField('Send')
 class UpdateAccountForm(FlaskForm):
     name = StringField('Username')
     about = StringField('About')
@@ -64,13 +112,12 @@ class UpdateAccountForm(FlaskForm):
             if user:
                 raise ValidationError('That username is taken. Please choose a different one.')
 
-    def validate_email(self, email):
-        if email.data != current_user.email:
-            user = User.query.filter_by(email=email.data).first()
-            if user:
-                raise ValidationError('That email is taken. Please choose a different one.')
+    def validate_phone(self, phone):
+        if len(phone.data) != 10:
+            raise ValidationError('Enter valid phone number.')
+            
 class PostForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])
     content = TextAreaField('Content', validators=[DataRequired()])
-    picture = FileField('Upload Media', validators=[FileAllowed(['jpg', 'png','mp4','jpeg','svg','webp'])])
+    picture = FileField('Upload Media', validators=[FileAllowed([], 'Only media files are allowed.')])
     submit = SubmitField('Post')

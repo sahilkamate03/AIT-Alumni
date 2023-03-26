@@ -17,8 +17,11 @@ def roleProvider(email):
 
 @login_manager.user_loader
 def load_user(uid):
-    user = auth.get_user(uid)
-    return User(uid, user.email)
+    try:
+        user = auth.get_user(uid)
+        return User(uid, user.email)
+    except:
+        pass
 class User(UserMixin):
     def __init__(self, uid, email):
         self.uid = uid

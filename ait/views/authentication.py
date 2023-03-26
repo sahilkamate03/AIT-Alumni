@@ -7,7 +7,7 @@ import pyrebase
 from ait import db_fire
 from ait.models import User
 from ait import db_fire, pyrebase
-from ait.forms import LoginForm, RegistrationForm, PasswordRestForm
+from ait.forms import LoginForm, RegistrationForm, PasswordRestForm, EmailVerificationForm
 
 import os
 from datetime import date
@@ -58,8 +58,6 @@ def send_verification_email(email):
     smtp_username = os.getenv('EMAIL')
     smtp_password = os.getenv('EMAIL_PWD')
 
-    print(smtp_password, smtp_username)
-
     with smtplib.SMTP(smtp_server, smtp_port) as smtp:
         smtp.ehlo()
         smtp.starttls()
@@ -96,8 +94,6 @@ def reset_password(email):
     smtp_username = os.getenv('EMAIL')
     smtp_password = os.getenv('EMAIL_PWD')
 
-    print(smtp_password, smtp_username)
-
     with smtplib.SMTP(smtp_server, smtp_port) as smtp:
         smtp.ehlo()
         smtp.starttls()
@@ -117,10 +113,12 @@ def login():
         try:
             user_id =auth.get_user_by_email(email)
         except:
+            flash('User not found. Create Account.', 'info')
             return redirect(url_for('authentication.register'))
         
         print(user_id.email_verified)
         if not(user_id.email_verified):
+            flash('Verify your email.', 'info')
             return render_template('./auth_page/pages-login.html', title = 'Login', form=form)
             
         try:
@@ -163,12 +161,13 @@ def register():
         "verified" : False
         }
         try:
+            db_fire.collection(role).document(form.email.data.split("@")[0]).set(data)
             auth.create_user(email =email, password =password)
             send_verification_email(email)
-            db_fire.collection(role).document(form.email.data.split("@")[0]).set(data)
+            flash(f'Verification link send to email.','info')
+            return redirect(url_for('authentication.login'))
         except Exception as e:
             print(e)
-        return redirect(url_for('authentication.login'))
         
     return render_template('./auth_page/pages-register.html', title = 'Register', form =form)
 
@@ -184,10 +183,33 @@ def password_reset():
         
         try:
             reset_password(email)
-            return redirect(url_for('home.login'))
+            return redirect(url_for('authentication.login'))
         except Exception as e: 
             flash('Login Unsuccessful. Please check email and password', 'danger')
             print(e)
             return redirect(url_for('authentication.login'))
         
     return render_template('./auth_page/pwd_reset.html', title = 'Password Reset', form=form)
+
+@authentication.route('/send_verification_email', methods= ['GET', 'POST'])
+def verify_email():
+    form = EmailVerificationForm()
+    if form.validate_on_submit():
+        email =form.email.data
+        try:
+            auth.get_user_by_email(email)
+        except:
+            flash('User not found. Create Account.', 'info')
+            return redirect(url_for('authentication.register'))
+        
+        try:
+            print(email)
+            send_verification_email(email)
+            flash('Verification email send.', 'info')
+            return redirect(url_for('authentication.login'))
+        except Exception as e: 
+            flash('Unable to send. Please check later.', 'danger')
+            print(e)
+            return redirect(url_for('authentication.login'))
+        
+    return render_template('./auth_page/verify_email.html', title = 'Verify Account', form=form)

@@ -42,6 +42,16 @@
             </div>
           </div><!-- End View Post -->
 
+          {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+          {% for category, message in messages %}
+          <div class="alert alert-{{category}}  mx-auto " role="alert">
+            {{message}}
+          </div>
+          {% endfor %}
+          {% endif %}
+          {% endwith %}
+          
           <!-- View Post-->
           {% for post in posts %}
           {%set post =post.to_dict() %}

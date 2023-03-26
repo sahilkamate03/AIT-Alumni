@@ -15,6 +15,16 @@
               </a>
             </div><!-- End Logo -->
 
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{category}}  mx-auto " role="alert">
+              {{message}}
+            </div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+
             <div class="card mb-3">
 
               <div class="card-body">
@@ -60,53 +70,53 @@
                       </div>
                     </div>
 
-                      <div class="col-12">
-                        <div class="form-group">
-                          {{ form.password.label(class="form-label") }}
-                          {% if form.password.errors %}
-                          {{ form.password(class="form-control form-control-lg is-invalid") }}
-                          <div class="invalid-feedback">
-                            {% for error in form.password.errors %}
-                            <span>{{ error }}</span>
-                            {% endfor %}
-                          </div>
-                          {% else %}
-                          {{ form.password(class="form-control form-control-lg") }}
-                          {% endif %}
+                    <div class="col-12">
+                      <div class="form-group">
+                        {{ form.password.label(class="form-label") }}
+                        {% if form.password.errors %}
+                        {{ form.password(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                          {% for error in form.password.errors %}
+                          <span>{{ error }}</span>
+                          {% endfor %}
                         </div>
+                        {% else %}
+                        {{ form.password(class="form-control form-control-lg") }}
+                        {% endif %}
                       </div>
+                    </div>
 
-                      <div class="col-12">
-                        <div class="form-group">
-                          {{ form.confirm_password.label(class="form-control-label") }}
-                          {% if form.confirm_password.errors %}
-                          {{ form.confirm_password(class="form-control form-control-lg is-invalid") }}
-                          <div class="invalid-feedback">
-                            {% for error in form.confirm_password.errors %}
-                            <span>{{ error }}</span>
-                            {% endfor %}
-                          </div>
-                          {% else %}
-                          {{ form.confirm_password(class="form-control form-control-lg") }}
-                          {% endif %}
+                    <div class="col-12">
+                      <div class="form-group">
+                        {{ form.confirm_password.label(class="form-control-label") }}
+                        {% if form.confirm_password.errors %}
+                        {{ form.confirm_password(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                          {% for error in form.confirm_password.errors %}
+                          <span>{{ error }}</span>
+                          {% endfor %}
                         </div>
+                        {% else %}
+                        {{ form.confirm_password(class="form-control form-control-lg") }}
+                        {% endif %}
                       </div>
+                    </div>
 
-                      <div class="col-12 mt-3">
-                        <div class="form-check">
-                          <input class="form-check-input" name="terms" type="checkbox" value="" id="acceptTerms"
-                            required>
-                          <label class="form-check-label" for="acceptTerms">I agree and accept the <a href="#">terms and
-                              conditions</a></label>
-                          <div class="invalid-feedback">You must agree before submitting.</div>
-                        </div>
+                    <div class="col-12 mt-3">
+                      <div class="form-check">
+                        <input class="form-check-input" name="terms" type="checkbox" value="" id="acceptTerms" required>
+                        <label class="form-check-label" for="acceptTerms">I agree and accept the <a href="#">terms and
+                            conditions</a></label>
+                        <div class="invalid-feedback">You must agree before submitting.</div>
                       </div>
-                      <div class="col-12 mt-2">
-                        {{ form.submit(class="btn btn-primary w-100") }}
-                      </div>
-                      <div class="col-12 mt-2">
-                        <p class="small mb-0">Already have an account? <a href="{{ url_for('authentication.login') }}">Log in</a></p>
-                      </div>
+                    </div>
+                    <div class="col-12 mt-2">
+                      {{ form.submit(class="btn btn-primary w-100") }}
+                    </div>
+                    <div class="col-12 mt-2">
+                      <p class="small mb-0">Already have an account? <a href="{{ url_for('authentication.login') }}">Log
+                          in</a></p>
+                    </div>
                   </fieldset>
                 </form>
 

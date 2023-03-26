@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, abort, url_for, redirect, jsonify, request
+from flask import Blueprint, render_template, abort, url_for, redirect, jsonify, request, flash
 from flask_login import current_user, login_required
 from firebase_admin import storage
 
@@ -61,6 +61,7 @@ def new_post():
 
         id = current_user.username + data['date_created'].strftime(r'%Y%m%d%H%M%S')
         db_fire.collection('post').document(id).set(data)
+        flash('Post Added.', 'success')
         return redirect(url_for('home.home_latest'))
     return render_template('new_post.html', title='New Post',form=form, legend='New Post', user_data = user_data)
 
@@ -83,6 +84,7 @@ def add_comment(post_id):
             }
         }
         db_fire.collection('post').document(post_id).set({"comments": data}, merge = True)
+        flash('Comment Added.', 'success')
         return redirect(url_for('home.home_latest'))
 
 @post.route('/like/<string:post_id>', methods=['POST'])
@@ -98,5 +100,5 @@ def like(post_id):
             else:
                 result['likes'].append(current_user.username)
                 db_fire.collection('post').document(post_id).set(result, merge = True)
-
+        flash('Post Liked.', 'success')
         return redirect(url_for('home.home_latest'))

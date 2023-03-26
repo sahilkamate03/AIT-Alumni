@@ -2,13 +2,13 @@
 {% block content %}
 <main id="main" class="main">
 
+  <!-- Page Title -->
   <div class="pagetitle">
-    <h1>Profile</h1>
+    <h1>Dashboard</h1>
     <nav>
       <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-        <li class="breadcrumb-item">Users</li>
-        <li class="breadcrumb-item active">Profile</li>
+        <li class="breadcrumb-item"><a href="{{ url_for('home.home_latest' ) }}">Home</a></li>
+        <li class="breadcrumb-item active">User</li>
       </ol>
     </nav>
   </div><!-- End Page Title -->
@@ -34,10 +34,23 @@
             <h2>{{ user_data['name']}}</h2>
             <h3>{{current_user.role}}</h3>
             <div class="social-links mt-2">
+
+              {% if user_data['twitter'] != ('') %}
               <a href="{{user_data['twitter']}}" class="twitter"><i class="bi bi-twitter"></i></a>
+              {% endif %}
+
+              {% if user_data['facebook'] != ('') %}
               <a href="{{user_data['facebook']}}" class="facebook"><i class="fa-brands fa-github"></i></a>
+              {% endif %}
+
+              {% if user_data['instagram'] != ('') %}
               <a href="{{user_data['instagram']}}" class="instagram"><i class="bi bi-instagram"></i></a>
+              {% endif %}
+
+              {% if user_data['linkedin'] != ('') %}
               <a href="{{user_data['linkedin']}}" class="linkedin"><i class="bi bi-linkedin"></i></a>
+              {% endif %}
+
             </div>
 
             {% if user_data['cv_link'] %}
@@ -121,7 +134,15 @@
                     <label for="profileImage" class="col-md-4 col-lg-3 col-form-label">Profile Image</label>
                     <div class="col-md-8 col-lg-9">
 
-                      <img src="{{ url_for('static',filename='/profile_pic/default.webp' ) }}" alt="Profile">
+                      {% with profile_url = user_data['profile_url'] %}
+                      {% if profile_url == '' %}
+                      <img class="rounded-circle me-2" style="aspect-ratio: 1;"
+                        src="{{ url_for('static',filename='/profile_pic/default.jpeg' ) }}" height="40" width="40">
+                      {% else %}
+                      <img class="rounded-circle me-2" style="aspect-ratio: 1;" src="{{user_data['profile_url']}}" height="40" width="40">
+
+                      {% endif %}
+                      {% endwith %}
 
                       <div class="pt-2">
                         <!-- <a href="#" class="btn btn-primary btn-sm" title="Upload new profile image"><i
