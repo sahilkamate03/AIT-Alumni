@@ -102,3 +102,6 @@ def like(post_id):
                 db_fire.collection('post').document(post_id).set(result, merge = True)
         flash('Post Liked.', 'success')
         return redirect(url_for('home.home_latest'))
+
+
+

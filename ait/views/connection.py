@@ -1,10 +1,27 @@
-from flask import Blueprint, render_template, abort, url_for, redirect
+from flask import Blueprint, render_template, abort, url_for, redirect, request, flash
 from flask_login import current_user, login_required
 from ait import db_fire
 from datetime import datetime
 from ait.models import User
 
+from datetime import date
+
 connect =Blueprint('connection',__name__)
+
+def roleProvider(username):
+    try:
+        passYear =username.split('_')[1][0:2]
+        year =int('20' + passYear)
+        currYear = int(date.today().year)
+
+        if (year<currYear-4) :
+            return 'Alumini'
+        else :
+            return 'Student'
+    except:
+        return None
+    
+
 
 @connect.route('/connection')
 @login_required
@@ -99,4 +116,27 @@ def action_req(username,type):
                 data.remove(username)
                 doc_ref.set({'pending': data},merge = True)
 
-        return redirect(url_for('home.home'))
+        return redirect(url_for('home.home_latest'))
+    
+@connect.route('/search/<string:username>', methods=['GET','POST'])
+@login_required
+def search_user(username):
+        role =roleProvider(username)
+        if (role==None):
+            flash('Invalid Username.','danger')
+            return redirect(url_for('home.home_latest'))
+        if username == current_user.username:
+            return redirect (url_for('profile.account'))
+        else:
+            posts = db_fire.collection('post').where('username','==',username).get()
+            user_data = db_fire.collection(current_user.role).document(current_user.username).get().to_dict()
+            profile_data = db_fire.collection(role).document(username).get().to_dict()
+            type = db_fire.collection('connection').document(current_user.username).get()
+            
+            value = False
+            
+            if type.exists:
+                if username in type.to_dict().keys():
+                    value = True 
+            print(profile_data)
+            return render_template('user.html', profile_data = profile_data,user_data = user_data, posts = posts, value = value  )
