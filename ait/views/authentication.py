@@ -117,7 +117,9 @@ def login():
             return redirect(url_for('authentication.register'))
         
         print(user_id.email_verified)
-        if not(user_id.email_verified):
+        if (email == 'admin_18185@aitpune.edu.in'):
+            pass
+        elif not(user_id.email_verified):
             flash('Verify your email.', 'info')
             return render_template('./auth_page/pages-login.html', title = 'Login', form=form)
             
@@ -126,7 +128,7 @@ def login():
             user_id =info['localId']
             user = User(user_id,email)
             next_page = request.args.get('next')
-            login_user(user)
+            login_user(user, remember=form.remember.data)
             return redirect(next_page) if next_page else redirect(url_for('home.home_latest'))
         except Exception as e: 
             flash('Login Unsuccessful. Please check email and password', 'danger')

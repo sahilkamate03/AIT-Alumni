@@ -87,11 +87,12 @@ class EmailVerificationForm(FlaskForm):
         else: 
             raise ValidationError('Enter valid email.')
         
-        if '_' not in email.data.split('@')[0] or len(email.data.split('@')[0].split('_')[1])!=5:
-            raise ValidationError('Enter valid email.')
 
         if ait != 'aitpune.edu.in':
             raise ValidationError('Only @aitpune.edu.in email address allowed.')
+        
+        if '_' not in email.data.split('@')[0] or len(email.data.split('@')[0].split('_')[1])!=5:
+            raise ValidationError('Enter valid email.')
         
     submit = SubmitField('Send')
 class UpdateAccountForm(FlaskForm):
@@ -119,5 +120,5 @@ class UpdateAccountForm(FlaskForm):
 class PostForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])
     content = TextAreaField('Content', validators=[DataRequired()])
-    picture = FileField('Upload Media', validators=[FileAllowed([], 'Only media files are allowed.')])
+    picture = FileField('Upload Media', validators=[FileAllowed(['jpg', 'png','mp4','jpeg','svg','webp'], 'Only media files are allowed.')])
     submit = SubmitField('Post')

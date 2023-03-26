@@ -90,13 +90,15 @@
                     <div class="mt-2">
                       <h6 class="card-title">{{post['title']}}</h6>
                       <p class="comment-text">{{post['content']}}</p>
-                      {% if post['media'].split('.')[1] != 'mp4' %}
+                    
+                      {% if 'mp4' not in post['media']%}
                       <img src="{{post['media']}}" alt="" class="img-fluid">
                       {% else %}
                       <video width="100%" controls>
                         <source src="{{post['media']}}" type="video/mp4">
                       </video>
                       {% endif %}
+
                     </div>
                   </div>
                   <div class="bg-white">
