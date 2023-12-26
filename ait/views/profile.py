@@ -95,7 +95,3 @@ def user(username,role):
                 value = True 
         return render_template('user.html', profile_data = profile_data,user_data = user_data, posts = posts, value = value  )
 
-
-@profile.route('/test')
-def test():
-    return "<h1>Hello, World</h1>"

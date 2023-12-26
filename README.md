@@ -1,22 +1,63 @@
-#Hi there!
+# AIT Connect Project
 
-AIT Hiring website is purposefully made with intention of connecting AIT Alumni with Students who could explore the Job and internship opportunity.
+## Overview
+The AIT Connect project is designed to bridge the gap between current students and alumni of the AIT (Army Institute of Technology) institute. It serves as a common platform for interaction, information sharing, and collaboration between students and alumni. The project facilitates communication regarding internship opportunities, career guidance, updates on current happenings at AIT, and more.
 
-This website features a user friendly design and intuitive layout
-*You can create your account ,login and log out.
-*Create new job postings and can express your views by comments.
-*You can manage your account dashboard, skills and tech stack for easy viewing of Employer.
-*News and recent activities section awares you about AIT's Succcess in several sectors.
-*Job search menu, filter and sort for ease of use.
-*A chat app that allows you to interact with employer and meet him virtually.
-*You can make connections and grow your professional network.
+## Getting Started
+
+1. Visit the [link](https://ait-alumini.sahilkamate.repl.co/login).
+2. Enter the credentials.
+
+        Credentials
+        Email: sahilkamate_21185@aitpune.edu.in
+        Password: 123456
+3. Explore the site.
+### Local Setup
+To run the project locally, follow these steps:
+
+1. Clone the repository.
+2. Install the necessary dependencies.
+3. Configure Firebase credentials.
+4. Run the Flask application.
+
+## Technical Details
+
+### Technologies Used
+- **Python**: The backend of the project is implemented using Python.
+- **Flask**: Flask is utilized as the web framework for building the backend.
+- **Firebase**: Firebase serves as the backend database, ensuring secure and scalable data storage.
+- **HTML, CSS, and JS**: The frontend of the project is developed using a simple combination of HTML, CSS, and JavaScript.
+
+### Key Features
+1. **User Registration**: Only students and alumni with AIT email addresses can register on the platform.
+2. **Alumni Posting**: Alumni have the exclusive privilege to post on the website, sharing valuable insights and information.
+3. **Chat Section**: A real-time chat section is implemented using web sockets, enabling communication between alumni and students.
+4. **Follow System**: Users can follow alumni to receive updates and posts from specific individuals.
+5. **Post Filtering**: Posts can be filtered based on criteria such as top posts and most liked posts.
+6. **Security**: The project prioritizes security by utilizing Firebase as the backend, ensuring a robust and secure platform.
+7. **Organized Structure**: The project maintains a proper folder structure, with well-named functions and files for clarity and maintainability.
 
 
-#How to Use
+## Folder Structure
+
+ ### Flask Blueprints for Folder Structure
+The project leverages Flask Blueprints to maintain a clean and organized folder structure. This helps in modularizing the application, making it more scalable and maintainable. Here is a breakdown of the folder structure:
+
+    /ait
+        |-- static
+        |-- templates
+        |-- views
+        |-- __init__.py
+        |-- forms.py
+        |-- models.py
+    |-- app.py
+    |-- requirements.txt
+    |-- README
+ 
 
 
+## Dependencies
+- Flask
+- Firebase SDK
+- [Other dependencies listed in requirements.txt]
 
-
-##Useful links
-[website](https://github.com/sahilkamate03/DeVerse)
-[AIT,Pune](https://www.aitpune.com)
