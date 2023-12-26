@@ -61,3 +61,25 @@ The project leverages Flask Blueprints to maintain a clean and organized folder 
 - Firebase SDK
 - [Other dependencies listed in requirements.txt]
 
+## Screenshots
+
+Dashboard
+
+![alt Dashboard](https://github.com/sahilkamate03/AIT-Alumni/blob/dev/screenshots/dashboard.png?raw=true)
+
+Profile
+
+![alt Profile](https://github.com/sahilkamate03/AIT-Alumni/blob/dev/screenshots/profile.png?raw=true)
+
+Follow Page
+
+![alt Setting](https://github.com/sahilkamate03/AIT-Alumni/blob/dev/screenshots/follow.png?raw=true)
+
+Chat
+
+![alt Chat](https://github.com/sahilkamate03/AIT-Alumni/blob/dev/screenshots/chat.png?raw=true)
+
+
+Settings
+
+![alt Setting](https://github.com/sahilkamate03/AIT-Alumni/blob/dev/screenshots/settings.png?raw=true)
